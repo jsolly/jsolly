@@ -8,7 +8,7 @@ Welcome to John Solly's Github Page!
 
 🧰 Toolbox
 
-<img src="https://github.com/devicons/devicon/blob/master/icons/python/python-original-wordmark.svg" alt="Python Logo" width="100" height="100"/> <img src="https://github.com/devicons/devicon/blob/master/icons/django/django-plain.svg" alt="Django Logo" width="100" height="100"/> <img 
+<img src="https://github.com/devicons/devicon/blob/master/icons/python/python-original-wordmark.svg" alt="Python Logo" width="100" height="100"/> <img src="https://github.com/devicons/devicon/blob/master/icons/django/django-plain.svg" alt="Django Logo" width="100" height="100"/>
 
 ---
 
