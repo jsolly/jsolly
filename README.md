@@ -18,7 +18,7 @@ Welcome to John Solly's Github Page!
 
 [![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=jsolly&hide=java&theme=radical&layout=compact)](https://github.com/anuraghazra/github-readme-stats)
 
-![jsolly's GitHub stats](https://github-readme-stats.vercel.app/api?username=jsolly&show_icons=true&theme=radical)
+![](https://github-readme-stats.vercel.app/api?username=jsolly&show_icons=true&theme=radical)
 
 
 <!--
