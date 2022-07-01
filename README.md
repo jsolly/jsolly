@@ -33,10 +33,8 @@
 
 ---
 
-## &#x1f4c8; My GitHub Stats
-
 [![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=jsolly&hide=java&theme=radical&layout=compact)](https://github.com/anuraghazra/github-readme-stats)
 
-!["Github Stats"](https://github-readme-stats.vercel.app/api?username=jsolly&show_icons=true&theme=radical)
+![John Solly's GitHub stats](https://github-readme-stats.vercel.app/api?username=jsolly&show_icons=true&theme=radical)
 
 [![GitHub Streak](https://github-readme-streak-stats.herokuapp.com/?user=jsolly&theme=dark)](https://git.io/streak-stats)
