@@ -53,4 +53,4 @@
 
 [![GitHub Streak](https://github-readme-streak-stats.herokuapp.com/?user=jsolly&theme=dark)](https://git.io/streak-stats)
 
-[![github-readme-twitter](https://github-readme-twitter.gazf.vercel.app/api?id=effortlessgis)](https://github.com/gazf/github-readme-twitter)
+[![github-readme-twitter](https://github-readme-twitter.gazf.vercel.app/api?id=effortlessgis&show_reply=off)](https://github.com/gazf/github-readme-twitter)
