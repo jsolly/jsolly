@@ -1,5 +1,4 @@
-### Hi there
-Welcome to John Solly's Github Page!
+![Header](./github-header-image.png)
 
 ---
 
