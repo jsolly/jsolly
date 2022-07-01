@@ -39,13 +39,14 @@
 ![Salesforce](https://img.shields.io/badge/Salesforce-00A1E0.svg?style=for-the-badge&logo=Salesforce&logoColor=white)
 ![Heroku](https://img.shields.io/badge/Heroku-430098.svg?style=for-the-badge&logo=Heroku&logoColor=white)
 ![Amazon EC2](https://img.shields.io/badge/Amazon%20EC2-FF9900.svg?style=for-the-badge&logo=Amazon-EC2&logoColor=white)
-#### Authentication
-Okta (saml)
 
 #### Productivity
 ![Todoist](https://img.shields.io/badge/Todoist-E44332.svg?style=for-the-badge&logo=Todoist&logoColor=white)
 ![Vim](https://img.shields.io/badge/Vim-019733.svg?style=for-the-badge&logo=Vim&logoColor=white)
 ![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-007ACC.svg?style=for-the-badge&logo=Visual-Studio-Code&logoColor=white)
+
+#### Comapanies and Universities I've worked for
+![Esri](./esri_logo.svg)
 
 ---
 
