@@ -15,7 +15,7 @@
 ![OpenLayers](https://img.shields.io/badge/Openlayers-1F6B75.svg?style=for-the-badge&logo=Openlayers&logoColor=white)
 ![Google Maps](https://img.shields.io/badge/Google%20Maps-4285F4.svg?style=for-the-badge&logo=Google-Maps&logoColor=white)
 ![Qgis](https://img.shields.io/badge/Qgis-589632.svg?style=for-the-badge&logo=Qgis&logoColor=white)
-![Esri](./logos/esri_logo.svg)
+![Esri](./esri_logo.svg)
 
 #### Databases
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1.svg?style=for-the-badge&logo=MySQL&logoColor=white)
