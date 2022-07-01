@@ -1,29 +1,22 @@
 ![Header](./github-jsolly-header.png)
 ---
-
-🧰 Toolbox
-
 #### Languages
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=for-the-badge&logo=JavaScript&logoColor=black)
 ![Python](https://img.shields.io/badge/Python-3776AB.svg?style=for-the-badge&logo=Python&logoColor=white)
-
 #### Frameworks
 ![Django](https://img.shields.io/badge/Django-092E20.svg?style=for-the-badge&logo=Django&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-339933.svg?style=for-the-badge&logo=nodedotjs&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-000000.svg?style=for-the-badge&logo=Express&logoColor=white)
-
 #### GIS
 ![Leaflet.js](https://img.shields.io/badge/Leaflet-199900.svg?style=for-the-badge&logo=Leaflet&logoColor=white)
 ![OpenLayers](https://img.shields.io/badge/Openlayers-1F6B75.svg?style=for-the-badge&logo=Openlayers&logoColor=white)
 ![Google Maps](https://img.shields.io/badge/Google%20Maps-4285F4.svg?style=for-the-badge&logo=Google-Maps&logoColor=white)
 ![Qgis](https://img.shields.io/badge/Qgis-589632.svg?style=for-the-badge&logo=Qgis&logoColor=white)
 ![Esri](./esri_logo.svg)
-
 #### Databases
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1.svg?style=for-the-badge&logo=MySQL&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1.svg?style=for-the-badge&logo=PostgreSQL&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/MongoDB-47A248.svg?style=for-the-badge&logo=MongoDB&logoColor=white)
-
 #### Other Tools
 ![Pytest](https://camo.githubusercontent.com/d7afbe157e5e1aa8379027ab2a1d8170a4c021fb1f71859bf5715436cecf7438/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f5079746573742d3041394544432e7376673f7374796c653d666f722d7468652d6261646765266c6f676f3d507974657374266c6f676f436f6c6f723d7768697465)
 ![Selenium](https://img.shields.io/badge/Selenium-43B02A.svg?style=for-the-badge&logo=Selenium&logoColor=white)
@@ -39,12 +32,10 @@
 ![Salesforce](https://img.shields.io/badge/Salesforce-00A1E0.svg?style=for-the-badge&logo=Salesforce&logoColor=white)
 ![Heroku](https://img.shields.io/badge/Heroku-430098.svg?style=for-the-badge&logo=Heroku&logoColor=white)
 ![Amazon EC2](https://img.shields.io/badge/Amazon%20EC2-FF9900.svg?style=for-the-badge&logo=Amazon-EC2&logoColor=white)
-
 #### Productivity
 ![Todoist](https://img.shields.io/badge/Todoist-E44332.svg?style=for-the-badge&logo=Todoist&logoColor=white)
 ![Vim](https://img.shields.io/badge/Vim-019733.svg?style=for-the-badge&logo=Vim&logoColor=white)
 ![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-007ACC.svg?style=for-the-badge&logo=Visual-Studio-Code&logoColor=white)
-
 #### Comapanies and Universities I've worked for
 ![Esri](./esri_logo.svg)
 ![YellowFin_logo](https://user-images.githubusercontent.com/9572232/176968781-bc3b7969-2b06-4470-99c3-4413ec60e8fa.png)
@@ -61,3 +52,5 @@
 ![John Solly's GitHub stats](https://github-readme-stats.vercel.app/api?username=jsolly&show_icons=true&theme=radical)
 
 [![GitHub Streak](https://github-readme-streak-stats.herokuapp.com/?user=jsolly&theme=dark)](https://git.io/streak-stats)
+
+[![github-readme-twitter](https://github-readme-twitter.gazf.vercel.app/api?id=effortlessgis)](https://github.com/gazf/github-readme-twitter)
