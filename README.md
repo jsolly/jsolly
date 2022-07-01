@@ -17,6 +17,7 @@
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1.svg?style=for-the-badge&logo=MySQL&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1.svg?style=for-the-badge&logo=PostgreSQL&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/MongoDB-47A248.svg?style=for-the-badge&logo=MongoDB&logoColor=white)
+![Microsoft SQL Server](https://img.shields.io/badge/Microsoft%20SQL%20Server-CC2927.svg?style=for-the-badge&logo=Microsoft-SQL-Server&logoColor=white)
 #### Other Tools
 ![Pytest](https://camo.githubusercontent.com/d7afbe157e5e1aa8379027ab2a1d8170a4c021fb1f71859bf5715436cecf7438/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f5079746573742d3041394544432e7376673f7374796c653d666f722d7468652d6261646765266c6f676f3d507974657374266c6f676f436f6c6f723d7768697465)
 ![Selenium](https://img.shields.io/badge/Selenium-43B02A.svg?style=for-the-badge&logo=Selenium&logoColor=white)
