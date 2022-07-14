@@ -27,7 +27,6 @@
 ![Nginx](https://img.shields.io/badge/NGINX-009639.svg?style=for-the-badge&logo=NGINX&logoColor=white)
 ![Apache](https://camo.githubusercontent.com/299eb0e1ad2382b6da278f36bc6659e38f29ecfb6a47e043fdee8bad488cb957/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f4170616368652d4432323132382e7376673f7374796c653d666f722d7468652d6261646765266c6f676f3d417061636865266c6f676f436f6c6f723d7768697465)
 ![Jupyter](https://img.shields.io/badge/Jupyter-F37626.svg?style=for-the-badge&logo=Jupyter&logoColor=white)
-![Ubuntu](https://camo.githubusercontent.com/68d51ad5dbaf659044650db8e85efda67ba7a0628a70251646d7a990eeb936ab/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f5562756e74752d4539353432302e7376673f7374796c653d666f722d7468652d6261646765266c6f676f3d5562756e7475266c6f676f436f6c6f723d7768697465)
 ![Linode](https://img.shields.io/badge/Linode-00A95C.svg?style=for-the-badge&logo=Linode&logoColor=white)
 ![Jira](https://img.shields.io/badge/Jira-0052CC.svg?style=for-the-badge&logo=Jira&logoColor=white)
 ![Confluence](https://img.shields.io/badge/Confluence-172B4D.svg?style=for-the-badge&logo=Confluence&logoColor=white)
@@ -49,10 +48,14 @@
 
 ---
 
-[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=jsolly&hide=java&theme=radical&layout=compact)](https://github.com/anuraghazra/github-readme-stats)
+<p align="center">
+<a href="https://github.com/anuraghazra/github-readme-stats">
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=jsolly&theme=default_repocard" />
+</a>
+<a href="https://github.com/anuraghazra/convoychat">
+  <img src="https://github-readme-twitter.gazf.vercel.app/api?id=_jsolly&show_reply=off" />
+</a>
+  </p>
 
-![John Solly's GitHub stats](https://github-readme-stats.vercel.app/api?username=jsolly&show_icons=true&theme=radical)
 
-[![GitHub Streak](https://github-readme-streak-stats.herokuapp.com/?user=jsolly&theme=dark)](https://git.io/streak-stats)
-
-[![github-readme-twitter](https://github-readme-twitter.gazf.vercel.app/api?id=effortlessgis&show_reply=off)](https://github.com/gazf/github-readme-twitter)
+![John Solly's GitHub stats](https://github-readme-stats.vercel.app/api?username=jsolly&show_icons=true&theme=default_repocard) [![GitHub Streak](https://github-readme-streak-stats.herokuapp.com/?user=jsolly&theme=default_repocard)](https://git.io/streak-stats)
