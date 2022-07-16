@@ -1,4 +1,13 @@
-![Header](./github-jsolly-header.png)
+<h3 align="center">
+  Welcome to John Solly's profile!
+  <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="28">
+</h3>
+
+<!-- Typing SVG -->
+<p align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?lines=Full-Stack+Developer+%2B+Geospatial;Always+learning+new+things">
+</p>
+
 ---
 #### Languages
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=for-the-badge&logo=JavaScript&logoColor=black)
@@ -8,11 +17,11 @@
 ![Node.js](https://img.shields.io/badge/Node.js-339933.svg?style=for-the-badge&logo=nodedotjs&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-000000.svg?style=for-the-badge&logo=Express&logoColor=white)
 #### GIS
-![Leaflet.js](https://img.shields.io/badge/Leaflet-199900.svg?style=for-the-badge&logo=Leaflet&logoColor=white)
-![OpenLayers](https://img.shields.io/badge/Openlayers-1F6B75.svg?style=for-the-badge&logo=Openlayers&logoColor=white)
-![postgis-logo-small](https://user-images.githubusercontent.com/9572232/179356071-0cafe068-3e19-4c08-934e-5009785a4ce9.png)
-![Google Maps](https://img.shields.io/badge/Google%20Maps-4285F4.svg?style=for-the-badge&logo=Google-Maps&logoColor=white)
-![Qgis](https://img.shields.io/badge/Qgis-589632.svg?style=for-the-badge&logo=Qgis&logoColor=white)
+<img src="https://user-images.githubusercontent.com/9572232/179357369-dc65b584-6662-4ca3-b293-34a36a23a50d.png" height="30"></img>
+<img src="https://user-images.githubusercontent.com/9572232/179357243-bae2459a-5145-42fa-9fbf-c853d1e16c4d.png" height="30"></img>
+<img src="https://user-images.githubusercontent.com/9572232/179356712-80469202-25bb-456a-ac8c-14069f9b8906.png" height="30"></img>
+<img src="https://user-images.githubusercontent.com/9572232/179356071-0cafe068-3e19-4c08-934e-5009785a4ce9.png" height="30"></img>
+<img src="https://user-images.githubusercontent.com/9572232/179357058-c6401511-aa70-41f9-b487-5b20d23678d1.png" height="30"></img>
 ![Esri](./esri_logo.svg)
 #### Databases
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1.svg?style=for-the-badge&logo=MySQL&logoColor=white)
