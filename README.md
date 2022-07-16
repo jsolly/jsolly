@@ -10,6 +10,7 @@
 #### GIS
 ![Leaflet.js](https://img.shields.io/badge/Leaflet-199900.svg?style=for-the-badge&logo=Leaflet&logoColor=white)
 ![OpenLayers](https://img.shields.io/badge/Openlayers-1F6B75.svg?style=for-the-badge&logo=Openlayers&logoColor=white)
+![postgis-logo-small](https://user-images.githubusercontent.com/9572232/179356071-0cafe068-3e19-4c08-934e-5009785a4ce9.png)
 ![Google Maps](https://img.shields.io/badge/Google%20Maps-4285F4.svg?style=for-the-badge&logo=Google-Maps&logoColor=white)
 ![Qgis](https://img.shields.io/badge/Qgis-589632.svg?style=for-the-badge&logo=Qgis&logoColor=white)
 ![Esri](./esri_logo.svg)
