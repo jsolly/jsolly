@@ -53,7 +53,7 @@
   <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=jsolly&theme=default_repocard" />
 </a>
 <a href="https://github.com/anuraghazra/convoychat">
-  <img src="https://github-readme-twitter.gazf.vercel.app/api?id=_jsolly&show_reply=off" />
+  <img src="https://github-readme-twitter.gazf.vercel.app/api?id=_jsolly&show_reply=off&show_retweet=off" />
 </a>
   </p>
 
