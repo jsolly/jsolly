@@ -24,12 +24,8 @@
 <img src="https://user-images.githubusercontent.com/9572232/179356071-0cafe068-3e19-4c08-934e-5009785a4ce9.png" height="30"></img>
 <img src="https://user-images.githubusercontent.com/9572232/179357058-c6401511-aa70-41f9-b487-5b20d23678d1.png" height="30"></img>
 ![Esri](./esri_logo.svg)
-#### Databases
-![MySQL](https://img.shields.io/badge/MySQL-4479A1.svg?style=for-the-badge&logo=MySQL&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1.svg?style=for-the-badge&logo=PostgreSQL&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-47A248.svg?style=for-the-badge&logo=MongoDB&logoColor=white)
-![Microsoft SQL Server](https://img.shields.io/badge/Microsoft%20SQL%20Server-CC2927.svg?style=for-the-badge&logo=Microsoft-SQL-Server&logoColor=white)
 #### Other Tools
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248.svg?style=for-the-badge&logo=MongoDB&logoColor=white)
 ![Pytest](https://camo.githubusercontent.com/d7afbe157e5e1aa8379027ab2a1d8170a4c021fb1f71859bf5715436cecf7438/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f5079746573742d3041394544432e7376673f7374796c653d666f722d7468652d6261646765266c6f676f3d507974657374266c6f676f436f6c6f723d7768697465)
 ![Selenium](https://img.shields.io/badge/Selenium-43B02A.svg?style=for-the-badge&logo=Selenium&logoColor=white)
 ![Github Actions](https://camo.githubusercontent.com/f8288ca79525f949c40a73eb967f2e2e8596c699758e42feedf3dec9d57af653/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f476974487562253230416374696f6e732d3230383846462e7376673f7374796c653d666f722d7468652d6261646765266c6f676f3d4769744875622d416374696f6e73266c6f676f436f6c6f723d7768697465)
