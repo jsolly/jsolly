@@ -10,7 +10,7 @@
 
 ---
 #### Languages
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=for-the-badge&logo=JavaScript&logoColor=black)
+<img src="https://user-images.githubusercontent.com/9572232/179662559-d909f40d-d2f4-425a-aa8b-5ad17e9aaaed.png" height="30"></img>
 ![Python](https://img.shields.io/badge/Python-3776AB.svg?style=for-the-badge&logo=Python&logoColor=white)
 #### Frameworks
 ![Django](https://img.shields.io/badge/Django-092E20.svg?style=for-the-badge&logo=Django&logoColor=white)
