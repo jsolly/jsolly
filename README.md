@@ -10,6 +10,9 @@
 
 ---
 
+
+<h2>Check out my Portfolio - > <a target="_blank" href="https://blogthedata.com/category/portfolio/">John's Portfolio 🗺</a><h2>
+
 #### Languages
 <img src="https://user-images.githubusercontent.com/9572232/179663910-c447e149-7ebc-4d36-a620-a3776e334326.png" height="30"></img>
 <img src="https://user-images.githubusercontent.com/9572232/179662559-d909f40d-d2f4-425a-aa8b-5ad17e9aaaed.png" height="30"></img>
