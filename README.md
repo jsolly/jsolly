@@ -64,7 +64,7 @@
 <a href="https://twitter.com/_jsolly">
   <img src="https://github-readme-twitter.gazf.vercel.app/api?id=_jsolly&show_reply=off&show_retweet=off" />
 </a>
-  </p>
 
 
 ![John Solly's GitHub stats](https://github-readme-stats.vercel.app/api?username=jsolly&show_icons=true&theme=default_repocard)[![GitHub Streak](https://github-readme-streak-stats.herokuapp.com/?user=jsolly&theme=default_repocard)](https://git.io/streak-stats)
+  </p>
