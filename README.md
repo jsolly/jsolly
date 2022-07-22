@@ -61,7 +61,7 @@
 <a href="https://github.com/anuraghazra/github-readme-stats">
   <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=jsolly&theme=default_repocard" />
 </a>
-<a href="https://github.com/gazf/github-readme-twitter">
+<a href="https://twitter.com/_jsolly">
   <img src="https://github-readme-twitter.gazf.vercel.app/api?id=_jsolly&show_reply=off&show_retweet=off" />
 </a>
   </p>
