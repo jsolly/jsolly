@@ -19,6 +19,8 @@
 <img src="https://user-images.githubusercontent.com/9572232/182749305-5c291c5d-bd09-4276-a044-4ed5519dd081.png" height="30"></img>
 </div>
 
+<br>
+
 
 <div align=center>
 <h3>Frameworks</h3>
@@ -28,6 +30,7 @@
 ![Express](https://img.shields.io/badge/Express-000000.svg?style=for-the-badge&logo=Express&logoColor=white)
 </div>
 
+<br>
 
 <div align=center>
 <h3>GIS</h3>
@@ -62,7 +65,8 @@
 ![Todoist](https://img.shields.io/badge/Todoist-E44332.svg?style=for-the-badge&logo=Todoist&logoColor=white)
 ![Vim](https://img.shields.io/badge/Vim-019733.svg?style=for-the-badge&logo=Vim&logoColor=white)
 </div>
-<br>
+  
+ <br>
 
 <div align=center>
 <h3>Who I've worked for</h3>
