@@ -10,8 +10,7 @@
 
 ---
 
-
-<h2><a target="_blank" href="https://blogthedata.com/category/portfolio/">Visit John's Portfolio <img src="https://user-images.githubusercontent.com/9572232/182750875-b0da0e59-d49e-4f74-b34d-f39a94d00e66.png"></a><h2>
+<h2><a target="_blank" href="https://blogthedata.com/category/portfolio/">Visit John's Portfolio <img src="https://user-images.githubusercontent.com/9572232/182878662-1294d61e-9d75-43e4-9900-c5d21adba722.png" height="20"></img></a><h2>
 
 #### Languages
 <img src="https://user-images.githubusercontent.com/9572232/182749809-a9e991d1-4d5c-446e-9738-e1326139b55e.png" height="30"></img>
