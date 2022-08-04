@@ -11,11 +11,15 @@
 ---
 
 
-<h2>Check out my Portfolio - > <a target="_blank" href="https://blogthedata.com/category/portfolio/">John's Portfolio 🗺</a><h2>
+<h2><a target="_blank" href="https://blogthedata.com/category/portfolio/">Visit John's Portfolio <img src="https://user-images.githubusercontent.com/9572232/182750875-b0da0e59-d49e-4f74-b34d-f39a94d00e66.png"></a><h2>
 
 #### Languages
+<img src="https://user-images.githubusercontent.com/9572232/182749809-a9e991d1-4d5c-446e-9738-e1326139b55e.png" height="30"></img>
 <img src="https://user-images.githubusercontent.com/9572232/179663910-c447e149-7ebc-4d36-a620-a3776e334326.png" height="30"></img>
-<img src="https://user-images.githubusercontent.com/9572232/179662559-d909f40d-d2f4-425a-aa8b-5ad17e9aaaed.png" height="30"></img>
+<img src="https://user-images.githubusercontent.com/9572232/182749305-5c291c5d-bd09-4276-a044-4ed5519dd081.png" height="30"></img>
+
+
+
 #### Frameworks
 ![Django](https://img.shields.io/badge/Django-092E20.svg?style=for-the-badge&logo=Django&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-339933.svg?style=for-the-badge&logo=nodedotjs&logoColor=white)
