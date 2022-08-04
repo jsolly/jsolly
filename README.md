@@ -89,5 +89,5 @@
 </a>
 
 
-![John Solly's GitHub stats](https://github-readme-stats.vercel.app/api?username=jsolly&show_icons=true&theme=default_repocard)[![GitHub Streak](https://github-readme-streak-stats.herokuapp.com/?user=jsolly&theme=default_repocard)](https://git.io/streak-stats)
+![John Solly's GitHub stats](https://github-readme-stats.vercel.app/api?username=jsolly&show_icons=true&theme=default_repocard&title_color=0d6efd&icon_color=0d6efd)[![GitHub Streak](https://github-readme-streak-stats.herokuapp.com?user=jsolly&ring=f00&fire=f00&currStreakLabel=f00)](https://git.io/streak-stats)
   </p>
