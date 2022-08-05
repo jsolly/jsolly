@@ -16,11 +16,10 @@
 <h3>Languages</h3>
 <img src="https://user-images.githubusercontent.com/9572232/182749809-a9e991d1-4d5c-446e-9738-e1326139b55e.png" height="30"></img>
 <img src="https://user-images.githubusercontent.com/9572232/179663910-c447e149-7ebc-4d36-a620-a3776e334326.png" height="30"></img>
-<img src="https://user-images.githubusercontent.com/9572232/182749305-5c291c5d-bd09-4276-a044-4ed5519dd081.png" height="30"></img>
+<img src="https://user-images.githubusercontent.com/9572232/183015264-7cacd1fe-0757-4732-a8a8-08f08eb3c2ec.png" height="30"></img>
 </div>
 
 <br>
-
 
 <div align=center>
 <h3>Frameworks</h3>
