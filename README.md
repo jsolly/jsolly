@@ -41,7 +41,7 @@
 <img src="https://user-images.githubusercontent.com/9572232/179356712-80469202-25bb-456a-ac8c-14069f9b8906.png" height="30"></img>
 <img src="https://user-images.githubusercontent.com/9572232/179356071-0cafe068-3e19-4c08-934e-5009785a4ce9.png" height="30"></img>
 <img src="https://user-images.githubusercontent.com/9572232/179357058-c6401511-aa70-41f9-b487-5b20d23678d1.png" height="30"></img>
-![Esri](./esri_logo.svg)
+<img src="https://user-images.githubusercontent.com/9572232/184282543-818a3f4b-c19e-4b09-9989-0908b93cf1a0.png" height="30"></img>
 </div>
 
 <br>
