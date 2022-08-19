@@ -89,6 +89,7 @@
   <img src="https://github-readme-twitter.gazf.vercel.app/api?id=_jsolly&show_reply=off&show_retweet=off"/>
 </a>
 
+<img alt="John Solly's Github Stats" class="thumbnail img-responsive" src="https://github-readme-stats.vercel.app/api?username=jsolly&show_icons=true&theme=default_repocard&title_color=0d6efd&icon_color=0d6efd" />
 
-![John Solly's GitHub stats](https://github-readme-stats.vercel.app/api?username=jsolly&show_icons=true&theme=default_repocard&title_color=0d6efd&icon_color=0d6efd)[![GitHub Streak](https://github-readme-streak-stats.herokuapp.com?user=jsolly&ring=f00&fire=f00&currStreakLabel=f00)](https://git.io/streak-stats)
+<img alt="John Solly's code frequency streak stats" class="thumbnail img-responsive" src="https://github-readme-streak-stats.herokuapp.com?user=jsolly&ring=990000&fire=990000&currStreakLabel=990000" />
   </div>
