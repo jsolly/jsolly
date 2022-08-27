@@ -51,20 +51,22 @@
 <div align=center>
 <h3>Other Tools<h3>
 
-![MongoDB](https://img.shields.io/badge/MongoDB-47A248.svg?style=for-the-badge&logo=MongoDB&logoColor=white)
-![Selenium](https://img.shields.io/badge/Selenium-43B02A.svg?style=for-the-badge&logo=Selenium&logoColor=white)
-![Github Actions](https://camo.githubusercontent.com/f8288ca79525f949c40a73eb967f2e2e8596c699758e42feedf3dec9d57af653/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f476974487562253230416374696f6e732d3230383846462e7376673f7374796c653d666f722d7468652d6261646765266c6f676f3d4769744875622d416374696f6e73266c6f676f436f6c6f723d7768697465)
 ![Jenkins](https://img.shields.io/badge/Jenkins-D24939.svg?style=for-the-badge&logo=Jenkins&logoColor=white)
 ![Gunicorn](https://img.shields.io/badge/Gunicorn-499848.svg?style=for-the-badge&logo=Gunicorn&logoColor=white)
 ![Nginx](https://img.shields.io/badge/NGINX-009639.svg?style=for-the-badge&logo=NGINX&logoColor=white)
 ![Apache](https://camo.githubusercontent.com/299eb0e1ad2382b6da278f36bc6659e38f29ecfb6a47e043fdee8bad488cb957/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f4170616368652d4432323132382e7376673f7374796c653d666f722d7468652d6261646765266c6f676f3d417061636865266c6f676f436f6c6f723d7768697465)
+![Github Actions](https://camo.githubusercontent.com/f8288ca79525f949c40a73eb967f2e2e8596c699758e42feedf3dec9d57af653/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f476974487562253230416374696f6e732d3230383846462e7376673f7374796c653d666f722d7468652d6261646765266c6f676f3d4769744875622d416374696f6e73266c6f676f436f6c6f723d7768697465)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248.svg?style=for-the-badge&logo=MongoDB&logoColor=white)
+![Selenium](https://img.shields.io/badge/Selenium-43B02A.svg?style=for-the-badge&logo=Selenium&logoColor=white)
+![PyTest](https://img.shields.io/badge/Pytest-0A9EDC.svg?style=for-the-badge&logo=Pytest&logoColor=white)
 ![Jupyter](https://img.shields.io/badge/Jupyter-F37626.svg?style=for-the-badge&logo=Jupyter&logoColor=white)
 ![Linode](https://img.shields.io/badge/Linode-00A95C.svg?style=for-the-badge&logo=Linode&logoColor=white)
 ![Jira](https://img.shields.io/badge/Jira-0052CC.svg?style=for-the-badge&logo=Jira&logoColor=white)
+![Heroku](https://img.shields.io/badge/Heroku-430098.svg?style=for-the-badge&logo=Heroku&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000.svg?style=for-the-badge&logo=Vercel&logoColor=white)
+![Amazon EC2](https://img.shields.io/badge/Amazon%20EC2-FF9900.svg?style=for-the-badge&logo=Amazon-EC2&logoColor=white)
 ![Confluence](https://img.shields.io/badge/Confluence-172B4D.svg?style=for-the-badge&logo=Confluence&logoColor=white)
 ![Salesforce](https://img.shields.io/badge/Salesforce-00A1E0.svg?style=for-the-badge&logo=Salesforce&logoColor=white)
-![Heroku](https://img.shields.io/badge/Heroku-430098.svg?style=for-the-badge&logo=Heroku&logoColor=white)
-![Amazon EC2](https://img.shields.io/badge/Amazon%20EC2-FF9900.svg?style=for-the-badge&logo=Amazon-EC2&logoColor=white)
 ![Todoist](https://img.shields.io/badge/Todoist-E44332.svg?style=for-the-badge&logo=Todoist&logoColor=white)
 ![Vim](https://img.shields.io/badge/Vim-019733.svg?style=for-the-badge&logo=Vim&logoColor=white)
 </div>
