@@ -79,7 +79,7 @@
 <div align=center>
 <h3>Who I've worked for</h3>
 
-![Esri](assets/esri_logo.svg)
+![Esri](https://user-images.githubusercontent.com/9572232/187053884-5bd67d48-2fc6-411c-84f0-703196691127.png)
 ![YellowFin_logo](https://user-images.githubusercontent.com/9572232/176968781-bc3b7969-2b06-4470-99c3-4413ec60e8fa.png)
 ![STKO](https://user-images.githubusercontent.com/9572232/176968770-827d7d47-99c8-4e50-8b72-65109bdaaf5f.png)
 ![George_Mason_University_Logo_text](https://user-images.githubusercontent.com/9572232/176968733-4d3a643c-f9a5-4fa5-ab4c-b09a4e30b890.png)
