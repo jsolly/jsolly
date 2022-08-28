@@ -16,9 +16,9 @@
 <div align=center>
 <h3>Languages</h3>
 <img src="https://user-images.githubusercontent.com/9572232/182749809-a9e991d1-4d5c-446e-9738-e1326139b55e.png" height="30"></img>
-<img src="https://user-images.githubusercontent.com/9572232/179663910-c447e149-7ebc-4d36-a620-a3776e334326.png" height="30"></img>
-<img src="https://user-images.githubusercontent.com/9572232/183015264-7cacd1fe-0757-4732-a8a8-08f08eb3c2ec.png" height="30"></img>
 <img src="https://user-images.githubusercontent.com/9572232/184163477-4132cabd-efbb-4ba1-85e0-35e2a087db87.png" height="30"></img>
+<img src="https://user-images.githubusercontent.com/9572232/179663910-c447e149-7ebc-4d36-a620-a3776e334326.png" height="30"></img>
+
 </div>
 
 
