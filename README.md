@@ -41,7 +41,7 @@
 <img alt="OpenLayers Logo" src="https://user-images.githubusercontent.com/9572232/187052910-d36d78ba-c837-48c8-b4fe-5df9141e612a.png" height="30"></img>
 <img alt="Qgis Logo" src="https://user-images.githubusercontent.com/9572232/179357243-bae2459a-5145-42fa-9fbf-c853d1e16c4d.png" height="30"></img>
 <img alt="Leaflet Logo" src="https://user-images.githubusercontent.com/9572232/179356712-80469202-25bb-456a-ac8c-14069f9b8906.png" height="30"></img>
-<img alt="PostGIS Logo" src="https://user-images.githubusercontent.com/9572232/179356071-0cafe068-3e19-4c08-934e-5009785a4ce9.png" height="30"></img>
+<img alt="PostGIS Logo" src="https://user-images.githubusercontent.com/9572232/187053470-6d70dbbd-1c9d-4239-a1bb-2a1c974e8ce6.png" height="30"></img>
 <img alt="Google Maps Logo" src="https://user-images.githubusercontent.com/9572232/179357058-c6401511-aa70-41f9-b487-5b20d23678d1.png" height="30"></img>
 <img alt="GDAL Logo" src="https://user-images.githubusercontent.com/9572232/184282543-818a3f4b-c19e-4b09-9989-0908b93cf1a0.png" height="30"></img>
 </div>
