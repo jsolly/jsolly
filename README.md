@@ -38,7 +38,7 @@
 <div align=center>
 <h3>GIS</h3>
 
-<img alt="OpenLayers Logo" src="https://user-images.githubusercontent.com/9572232/179357369-dc65b584-6662-4ca3-b293-34a36a23a50d.png" height="30"></img>
+<img alt="OpenLayers Logo" src="https://user-images.githubusercontent.com/9572232/187052910-d36d78ba-c837-48c8-b4fe-5df9141e612a.png" height="30"></img>
 <img alt="Qgis Logo" src="https://user-images.githubusercontent.com/9572232/179357243-bae2459a-5145-42fa-9fbf-c853d1e16c4d.png" height="30"></img>
 <img alt="Leaflet Logo" src="https://user-images.githubusercontent.com/9572232/179356712-80469202-25bb-456a-ac8c-14069f9b8906.png" height="30"></img>
 <img alt="PostGIS Logo" src="https://user-images.githubusercontent.com/9572232/179356071-0cafe068-3e19-4c08-934e-5009785a4ce9.png" height="30"></img>
