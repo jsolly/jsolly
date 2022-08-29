@@ -41,10 +41,13 @@
 <div align=center>
 <h3>Frameworks</h3>
 
-![Django](https://img.shields.io/badge/Django-092E20.svg?style=for-the-badge&logo=Django&logoColor=white)
-![React](https://img.shields.io/badge/React-61DAFB.svg?style=for-the-badge&logo=React&logoColor=black)
-![Node.js](https://img.shields.io/badge/Node.js-339933.svg?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![React](https://user-images.githubusercontent.com/9572232/187280634-60ba4296-e040-4214-9081-76d47e9ca893.png)
+![Django](https://user-images.githubusercontent.com/9572232/187280466-d3a9d7a3-4e4d-44d9-b97a-801430681b56.png)
+![Node.js](https://user-images.githubusercontent.com/9572232/187281067-5fc15583-98dc-4e5e-96d0-e67a20fa02a9.png)
 </div>
+
+
+
 
 <br>
 
