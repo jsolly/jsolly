@@ -25,13 +25,14 @@
 
 <div align=center>
 <h3>GIS</h3>
-
-<img alt="OpenLayers Logo" src="https://user-images.githubusercontent.com/9572232/187052910-d36d78ba-c837-48c8-b4fe-5df9141e612a.png" height="30"></img>
-<img alt="Qgis Logo" src="https://user-images.githubusercontent.com/9572232/179357243-bae2459a-5145-42fa-9fbf-c853d1e16c4d.png" height="30"></img>
-<img alt="Leaflet Logo" src="https://user-images.githubusercontent.com/9572232/179356712-80469202-25bb-456a-ac8c-14069f9b8906.png" height="30"></img>
-<img alt="PostGIS Logo" src="https://user-images.githubusercontent.com/9572232/187053470-6d70dbbd-1c9d-4239-a1bb-2a1c974e8ce6.png" height="30"></img>
-<img alt="Google Maps Logo" src="https://user-images.githubusercontent.com/9572232/179357058-c6401511-aa70-41f9-b487-5b20d23678d1.png" height="30"></img>
-<img alt="GDAL Logo" src="https://user-images.githubusercontent.com/9572232/184282543-818a3f4b-c19e-4b09-9989-0908b93cf1a0.png" height="30"></img>
+<img alt="ArcGIS Logo" src="https://user-images.githubusercontent.com/9572232/187739324-d4a9a0b2-43a6-4dda-946f-e1643d69ea7e.png"></img> 
+<img alt="Mapbox Logo" src="https://user-images.githubusercontent.com/9572232/187734886-221a838d-af21-43c1-bcc0-a8693bd420db.png"></img>
+<img alt="OpenLayers Logo" src="https://user-images.githubusercontent.com/9572232/187735285-ee909626-c398-4d0e-84b1-1dff1e2dc7cb.png"></img>
+<img alt="Qgis Logo" src="https://user-images.githubusercontent.com/9572232/187735567-40af7097-3cee-4720-8ef9-4bdf5d59b38c.png"></img>
+<img alt="Leaflet Logo" src="https://user-images.githubusercontent.com/9572232/187735767-673b644d-062b-4e9f-95f2-4906c5ff767f.png"></img>
+<img alt="PostGIS Logo" src="https://user-images.githubusercontent.com/9572232/187053470-6d70dbbd-1c9d-4239-a1bb-2a1c974e8ce6.png"></img>
+<img alt="Google Maps Logo" src="https://user-images.githubusercontent.com/9572232/187735995-c4bbd8bd-2380-4d3d-b56d-c4e1da73e40e.png"></img>
+<img alt="GDAL Logo" src="https://user-images.githubusercontent.com/9572232/187737147-546b8748-2e64-4369-a8f2-cf1f9908e65b.png"></img>
 </div>
 
 
