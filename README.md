@@ -25,7 +25,6 @@
 
 <div align=center>
 <h3>GIS</h3>
-  ![openlayersLogo]()
 
   
   
@@ -37,6 +36,7 @@
 <img alt="PostGIS Logo" src="https://user-images.githubusercontent.com/9572232/187053470-6d70dbbd-1c9d-4239-a1bb-2a1c974e8ce6.png"></img>
 <img alt="Google Maps Logo" src="https://user-images.githubusercontent.com/9572232/187735995-c4bbd8bd-2380-4d3d-b56d-c4e1da73e40e.png"></img>
 <img alt="GDAL Logo" src="https://user-images.githubusercontent.com/9572232/187737147-546b8748-2e64-4369-a8f2-cf1f9908e65b.png"></img>
+<img alt="GDAL Logo" src="https://user-images.githubusercontent.com/9572232/187740288-80a81832-7f36-46dc-a614-f627e8185fce.png"></img>
 </div>
 
 
