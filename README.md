@@ -25,9 +25,13 @@
 
 <div align=center>
 <h3>GIS</h3>
+  ![openlayersLogo]()
+
+  
+  
 <img alt="ArcGIS Logo" src="https://user-images.githubusercontent.com/9572232/187739324-d4a9a0b2-43a6-4dda-946f-e1643d69ea7e.png"></img> 
 <img alt="Mapbox Logo" src="https://user-images.githubusercontent.com/9572232/187734886-221a838d-af21-43c1-bcc0-a8693bd420db.png"></img>
-<img alt="OpenLayers Logo" src="https://user-images.githubusercontent.com/9572232/187735285-ee909626-c398-4d0e-84b1-1dff1e2dc7cb.png"></img>
+<img alt="OpenLayers Logo" src="https://user-images.githubusercontent.com/9572232/187739798-c1d6072a-5ab6-4018-a256-9b7d8c98b48d.png"></img>
 <img alt="Qgis Logo" src="https://user-images.githubusercontent.com/9572232/187735567-40af7097-3cee-4720-8ef9-4bdf5d59b38c.png"></img>
 <img alt="Leaflet Logo" src="https://user-images.githubusercontent.com/9572232/187735767-673b644d-062b-4e9f-95f2-4906c5ff767f.png"></img>
 <img alt="PostGIS Logo" src="https://user-images.githubusercontent.com/9572232/187053470-6d70dbbd-1c9d-4239-a1bb-2a1c974e8ce6.png"></img>
