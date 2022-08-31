@@ -15,9 +15,9 @@
 
 <div align=center>
 <h3>Languages</h3>
-<img src="https://user-images.githubusercontent.com/9572232/182749809-a9e991d1-4d5c-446e-9738-e1326139b55e.png" height="30"></img>
-<img src="https://user-images.githubusercontent.com/9572232/184163477-4132cabd-efbb-4ba1-85e0-35e2a087db87.png" height="30"></img>
-<img src="https://user-images.githubusercontent.com/9572232/179663910-c447e149-7ebc-4d36-a620-a3776e334326.png" height="30"></img>
+<img alt="TypeScript Logo" src="https://user-images.githubusercontent.com/9572232/187742114-347a4f1e-a480-472b-b096-d8177b12553b.png"></img>
+<img alt="SQL Logo" src="https://user-images.githubusercontent.com/9572232/187741483-786621a6-1ff1-4028-9f79-bae1491321da.png"></img>
+<img alt="Python Logo" src="https://user-images.githubusercontent.com/9572232/179663910-c447e149-7ebc-4d36-a620-a3776e334326.png"></img>
 
 </div>
 
