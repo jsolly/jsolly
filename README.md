@@ -97,20 +97,3 @@
 ![Todoist](https://img.shields.io/badge/Todoist-E44332.svg?style=for-the-badge&logo=Todoist&logoColor=white)
 ![Vim](https://img.shields.io/badge/Vim-019733.svg?style=for-the-badge&logo=Vim&logoColor=white)
 </div>
-  
- <br>
-
-
----
-
-<div align="center">
-<a href="https://github.com/anuraghazra/github-readme-stats">
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=jsolly&theme=default_repocard&title_color=0d6efd&hide=jupyter%20notebook" />
-</a>
-<a href="https://twitter.com/_jsolly">
-  <img src="https://github-readme-twitter.gazf.vercel.app/api?id=_jsolly&show_reply=off&show_retweet=off"/>
-</a>
-
-<img alt="John Solly's Github Stats" class="thumbnail img-responsive" src="https://github-readme-stats.vercel.app/api?username=jsolly&show_icons=true&theme=default_repocard&title_color=0d6efd&icon_color=0d6efd" /><img alt="John Solly's code frequency streak stats" class="thumbnail img-responsive" src="https://github-readme-streak-stats.herokuapp.com?user=jsolly&ring=990000&fire=990000&currStreakLabel=990000" />
-  </div>
-<a class="caption" target="_blank" href="https://github.com/anuraghazra/github-readme-stats#github-stats-card">How is the A+ ranking calculated?</a>
