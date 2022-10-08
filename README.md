@@ -5,7 +5,7 @@
 
 <!-- Typing SVG -->
 <p align="center">
-   <img alt="An animated SVG typing 'Full Stack Developer + Geospatial. Always Learning New Things."
+   <img alt="An animated SVG typing 'Full-Stack Developer + Geospatial. Always Learning New Things."
     src="https://readme-typing-svg.herokuapp.com?font=Helvetica&size=28&duration=5000&pause=1000&color=0B3B8E&center=true&vCenter=true&width=450&lines=Full+Stack+Developer+%2B+Geospatial+;Always+Learning+New+Things+%F0%9F%92%A1" />
 </p>
 
