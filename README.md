@@ -51,9 +51,11 @@
 
 <div align=center>
 <h3>Favorite Frameworks</h3>
-  
+
+![HTMX](https://github.com/jsolly/jsolly/assets/9572232/d6df8407-90b6-474c-93d5-6e64d7f22c85)
 ![Django](https://user-images.githubusercontent.com/9572232/187280466-d3a9d7a3-4e4d-44d9-b97a-801430681b56.png)
 ![Svelte](https://github.com/jsolly/jsolly/assets/9572232/eb080ed9-5931-4730-832e-3666c67e41e0)
+
 
 
 
@@ -84,8 +86,9 @@
 <br>
 
 <div align=center>
-<h3>Other Areas of Expertise<h3>
+<h3>Additional Areas of Expertise<h3>
 
+![Amazon](https://img.shields.io/badge/Amazon-FF9900.svg?style=for-the-badge&logo=Amazon&logoColor=white)
 ![React](https://img.shields.io/badge/React-61DAFB.svg?style=for-the-badge&logo=React&logoColor=black)
 ![Vue](https://img.shields.io/badge/Vue.js-4FC08D.svg?style=for-the-badge&logo=vuedotjs&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED.svg?style=for-the-badge&logo=Docker&logoColor=white)
@@ -103,7 +106,6 @@
 ![Jira](https://img.shields.io/badge/Jira-0052CC.svg?style=for-the-badge&logo=Jira&logoColor=white)
 ![Heroku](https://img.shields.io/badge/Heroku-430098.svg?style=for-the-badge&logo=Heroku&logoColor=white)
 ![Vercel](https://img.shields.io/badge/Vercel-000000.svg?style=for-the-badge&logo=Vercel&logoColor=white)
-![Amazon EC2](https://img.shields.io/badge/Amazon%20EC2-FF9900.svg?style=for-the-badge&logo=Amazon-EC2&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-646CFF.svg?style=for-the-badge&logo=Vite&logoColor=white)
 ![Todoist](https://img.shields.io/badge/Todoist-E44332.svg?style=for-the-badge&logo=Todoist&logoColor=white)
 ![Vim](https://img.shields.io/badge/Vim-019733.svg?style=for-the-badge&logo=Vim&logoColor=white)
