@@ -20,7 +20,7 @@
   </div>
 <a class="caption" target="_blank" href="https://github.com/anuraghazra/github-readme-stats#github-stats-card">How is the ranking calculated?</a>
 <div align=center>
-<h3>Languages</h3>
+<h3>Most Used Languages</h3>
 <img alt="Golang Logo" src="https://user-images.githubusercontent.com/9572232/192435921-8d488ea4-aaab-4982-bae4-c3b5782843b0.png"></img>
 <img alt="TypeScript Logo" src="https://user-images.githubusercontent.com/9572232/187742114-347a4f1e-a480-472b-b096-d8177b12553b.png"></img>
 <img alt="SQL Logo" src="https://user-images.githubusercontent.com/9572232/187741483-786621a6-1ff1-4028-9f79-bae1491321da.png"></img>
@@ -50,12 +50,13 @@
 <br>
 
 <div align=center>
-<h3>Frameworks</h3>
-
-![React](https://user-images.githubusercontent.com/9572232/187280634-60ba4296-e040-4214-9081-76d47e9ca893.png)
+<h3>Favorite Frameworks</h3>
+  
 ![Django](https://user-images.githubusercontent.com/9572232/187280466-d3a9d7a3-4e4d-44d9-b97a-801430681b56.png)
-![Node.js](https://user-images.githubusercontent.com/9572232/187281067-5fc15583-98dc-4e5e-96d0-e67a20fa02a9.png)
-![Vue.js](https://github.com/jsolly/jsolly/assets/9572232/35146349-9298-40ac-9b10-d2a49a1492de)
+![Svelte](https://github.com/jsolly/jsolly/assets/9572232/eb080ed9-5931-4730-832e-3666c67e41e0)
+
+
+
 
 
 </div>
@@ -83,7 +84,7 @@
 <br>
 
 <div align=center>
-<h3>Other Tools<h3>
+<h3>Other Areas of Expertise<h3>
 
 ![Jenkins](https://img.shields.io/badge/Jenkins-D24939.svg?style=for-the-badge&logo=Jenkins&logoColor=white)
 ![Gunicorn](https://img.shields.io/badge/Gunicorn-499848.svg?style=for-the-badge&logo=Gunicorn&logoColor=white)
@@ -101,10 +102,12 @@
 ![Vercel](https://img.shields.io/badge/Vercel-000000.svg?style=for-the-badge&logo=Vercel&logoColor=white)
 ![Amazon EC2](https://img.shields.io/badge/Amazon%20EC2-FF9900.svg?style=for-the-badge&logo=Amazon-EC2&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-646CFF.svg?style=for-the-badge&logo=Vite&logoColor=white)
-![Prettier](https://img.shields.io/badge/Prettier-F7B93E.svg?style=for-the-badge&logo=Prettier&logoColor=black)
-![ESLint](https://img.shields.io/badge/ESLint-4B32C3.svg?style=for-the-badge&logo=ESLint&logoColor=white)
-![Confluence](https://img.shields.io/badge/Confluence-172B4D.svg?style=for-the-badge&logo=Confluence&logoColor=white)
-![Salesforce](https://img.shields.io/badge/Salesforce-00A1E0.svg?style=for-the-badge&logo=Salesforce&logoColor=white)
 ![Todoist](https://img.shields.io/badge/Todoist-E44332.svg?style=for-the-badge&logo=Todoist&logoColor=white)
 ![Vim](https://img.shields.io/badge/Vim-019733.svg?style=for-the-badge&logo=Vim&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED.svg?style=for-the-badge&logo=Docker&logoColor=white)
+![Dask](https://img.shields.io/badge/Dask-FC6E6B.svg?style=for-the-badge&logo=Dask&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB.svg?style=for-the-badge&logo=React&logoColor=black)
+![Vue](https://img.shields.io/badge/Vue.js-4FC08D.svg?style=for-the-badge&logo=vuedotjs&logoColor=white)
+![Cloudflare](https://img.shields.io/badge/Cloudflare-F38020.svg?style=for-the-badge&logo=Cloudflare&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-7952B3.svg?style=for-the-badge&logo=Bootstrap&logoColor=white)
 </div>
