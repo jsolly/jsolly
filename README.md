@@ -30,7 +30,7 @@
 <br>
 
 <div align=center>
-<h3>GIS</h3>
+<h3>Geospatial Expertise</h3>
 
 
 
@@ -42,7 +42,7 @@
 <img alt="PostGIS Logo" src="https://user-images.githubusercontent.com/9572232/187053470-6d70dbbd-1c9d-4239-a1bb-2a1c974e8ce6.png"></img>
 <img alt="Google Maps Logo" src="https://user-images.githubusercontent.com/9572232/187735995-c4bbd8bd-2380-4d3d-b56d-c4e1da73e40e.png"></img>
 <img alt="GDAL Logo" src="https://user-images.githubusercontent.com/9572232/187737147-546b8748-2e64-4369-a8f2-cf1f9908e65b.png"></img>
-<img alt="GDAL Logo" src="https://user-images.githubusercontent.com/9572232/187740288-80a81832-7f36-46dc-a614-f627e8185fce.png"></img>
+<img alt="Maplibre Logo" src="https://user-images.githubusercontent.com/9572232/187740288-80a81832-7f36-46dc-a614-f627e8185fce.png"></img>
 </div>
 
 
@@ -50,7 +50,7 @@
 <br>
 
 <div align=center>
-<h3>Favorite Frameworks</h3>
+<h3>Web Dev ❤️</h3>
 
 ![HTMX](https://github.com/jsolly/jsolly/assets/9572232/d6df8407-90b6-474c-93d5-6e64d7f22c85)
 ![Django](https://user-images.githubusercontent.com/9572232/187280466-d3a9d7a3-4e4d-44d9-b97a-801430681b56.png)
