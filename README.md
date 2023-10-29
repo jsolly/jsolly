@@ -55,6 +55,9 @@
 ![React](https://user-images.githubusercontent.com/9572232/187280634-60ba4296-e040-4214-9081-76d47e9ca893.png)
 ![Django](https://user-images.githubusercontent.com/9572232/187280466-d3a9d7a3-4e4d-44d9-b97a-801430681b56.png)
 ![Node.js](https://user-images.githubusercontent.com/9572232/187281067-5fc15583-98dc-4e5e-96d0-e67a20fa02a9.png)
+![Vue.js](https://github.com/jsolly/jsolly/assets/9572232/35146349-9298-40ac-9b10-d2a49a1492de)
+
+
 </div>
 
 
@@ -63,13 +66,15 @@
 <br>
 
 <div align=center>
-<h3>Who I've worked for</h3>
+<h3>Who I've worked with</h3>
 
 ![Esri](https://user-images.githubusercontent.com/9572232/187053884-5bd67d48-2fc6-411c-84f0-703196691127.png)
 ![YellowFin_logo](https://user-images.githubusercontent.com/9572232/176968781-bc3b7969-2b06-4470-99c3-4413ec60e8fa.png)
 ![STKO](https://user-images.githubusercontent.com/9572232/176968770-827d7d47-99c8-4e50-8b72-65109bdaaf5f.png)
 ![George_Mason_University_Logo_text](https://user-images.githubusercontent.com/9572232/176968733-4d3a643c-f9a5-4fa5-ab4c-b09a4e30b890.png)
-![ucsbLogo](https://user-images.githubusercontent.com/9572232/187053563-954c2db4-dbde-4e4c-898c-467ae591d9d4.png)
+![UCSB_Logo](https://user-images.githubusercontent.com/9572232/187053563-954c2db4-dbde-4e4c-898c-467ae591d9d4.png)
+![UMD_Logo](https://github.com/jsolly/jsolly/assets/9572232/6b5c1716-d87e-47f2-a9c4-c2bb65edf669)
+![New_Light_Technologies](https://github.com/jsolly/jsolly/assets/9572232/8f9ac11b-65ba-4a9c-b3fa-e7ab2804bc78)
 
 
 </div>
