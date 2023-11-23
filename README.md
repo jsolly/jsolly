@@ -55,7 +55,7 @@
 ![HTMX](https://github.com/jsolly/jsolly/assets/9572232/d6df8407-90b6-474c-93d5-6e64d7f22c85)
 ![Django](https://user-images.githubusercontent.com/9572232/187280466-d3a9d7a3-4e4d-44d9-b97a-801430681b56.png)
 ![Svelte](https://github.com/jsolly/jsolly/assets/9572232/eb080ed9-5931-4730-832e-3666c67e41e0)
-
+![Vue](https://github.com/jsolly/jsolly/blob/main/assets/height_30/vue-js-logo.png)
 
 
 
