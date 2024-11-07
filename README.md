@@ -9,14 +9,3 @@
 </p>
 
 <h3 align=center><a target="_blank" rel="me" href="https://johnsolly.dev/showcase/">Open John's Portfolio<img src="https://user-images.githubusercontent.com/9572232/182878662-1294d61e-9d75-43e4-9900-c5d21adba722.png" height="20"></img></a><h3>
-
-<br>
-
-
----
-
-<div align="center">
-<img alt="John Solly's Github Stats" class="thumbnail img-responsive" src="https://github-readme-stats.vercel.app/api?username=jsolly&show_icons=true&theme=default_repocard&title_color=0d6efd&icon_color=0d6efd" /><img alt="John Solly's code frequency streak stats" class="thumbnail img-responsive" src="https://github-readme-streak-stats.herokuapp.com?user=jsolly&ring=990000&fire=990000&currStreakLabel=990000" />
-  </div>
-<a class="caption" target="_blank" href="https://github.com/anuraghazra/github-readme-stats#github-stats-card">How is the ranking calculated?</a>
-<div align=center>
