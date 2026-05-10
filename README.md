@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <a href="https://johnsolly.dev/showcase/" target="_blank">
-    Open John's Portfolio 🔗
+  <a href="https://www.jsolly.com/" target="_blank">
+    jsolly.com 🔗
   </a>
 </p>
