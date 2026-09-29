@@ -20,7 +20,7 @@ Local gate before push: `npm run gate` (full working-tree checks, including an e
 
 ## Purpose
 
-John's GitHub profile README. `README.md` is the whole page: HTML plus remote images, with no local image references. `assets/` holds images the README does not reference (none since 8f38963).
+John's GitHub profile README. `README.md` is the whole page: HTML plus remote images, with no local image files in the repo.
 
 ## Commands
 
