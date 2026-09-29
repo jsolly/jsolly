@@ -41,6 +41,12 @@ survives the squash merge's branch deletion; the loopback-only smoke fallback ca
 github.com). After merge, the live page is <https://github.com/jsolly>. No auth. Follow `~/code/dotagents/rules/frontend-verification.md` (`/verify-ui` where installed).
 The fleet No-CDN rule is n/a here: GitHub strips `<script>` and `<style>` from rendered READMEs.
 
+## AWS
+
+n/a — no AWS resources or deploy. The Cloud `environment.json` install is skills-only and does not
+run `.cursor/aws-oidc-login.sh`, so the `.cursor/CLOUD.md` "AWS reads" setup (AWS CLI,
+`AWS_PROFILE=agent-readonly`) is absent on this repo's Cloud Agents.
+
 ## Verified-tree CI
 
 PRs run the full CI suite. Post-merge CI reuses a successful PR run only when
