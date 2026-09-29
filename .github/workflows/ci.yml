@@ -1,0 +1,93 @@
+name: CI
+run-name: >-
+  ${{ (github.event_name != 'pull_request' ||
+  (github.event.action != 'labeled' && github.event.pull_request.user.login != 'dependabot[bot]') ||
+  (github.event.action == 'labeled' && github.event.label.name == 'ow-ci')) && format('{0} validation', github.workflow) || 'Deferred validation' }}
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  push:
+    branches: [main]
+
+# The event_name suffix keeps a workflow_dispatch of CI on main (ensure-main-ci, humans) from
+# cancelling the push run that a push-only Deploy follows via workflow_run.
+concurrency:
+  group: >-
+    ${{ (github.event_name != 'pull_request' ||
+    (github.event.action != 'labeled' && github.event.pull_request.user.login != 'dependabot[bot]') ||
+    (github.event.action == 'labeled' && github.event.label.name == 'ow-ci')) && format('ci-{0}-{1}-{2}', github.workflow, github.event.pull_request.number || github.ref, github.event_name) || format('deferred-{0}', github.run_id) }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+jobs:
+  # Dependabot PRs skip until a provenanced optimize-workspaces drain applies
+  # `ow-ci`. Only that `labeled` event runs CI, so a later Dependabot push
+  # defers again until the drain re-kicks the new head. Deferred jobs use
+  # name `ci-deferred` so a skipped required `ci` check cannot look green.
+  ci:
+    name: >-
+      ${{ (github.event_name != 'pull_request' ||
+      (github.event.action != 'labeled' && github.event.pull_request.user.login != 'dependabot[bot]') ||
+      (github.event.action == 'labeled' && github.event.label.name == 'ow-ci')) && 'ci' || 'ci-deferred' }}
+    if: >-
+      github.event_name != 'pull_request' ||
+      (github.event.action != 'labeled' && github.event.pull_request.user.login != 'dependabot[bot]') ||
+      (github.event.action == 'labeled' && github.event.label.name == 'ow-ci')
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Check for a validated PR tree
+        id: verified-tree
+        timeout-minutes: 1
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/ci-verified-tree.sh
+      - name: Install gitleaks
+        run: |
+          tmp=$(mktemp -d)
+          curl --fail --location --silent --show-error \
+            https://github.com/gitleaks/gitleaks/releases/download/v8.24.2/gitleaks_8.24.2_linux_arm64.tar.gz \
+            --output "$tmp/gitleaks.tar.gz"
+          echo "574a6d52573c61173add7ddb5e3cc68c0e82cb0735818a1eeb9a0a2de1643fbc  $tmp/gitleaks.tar.gz" | sha256sum --check
+          tar -xzf "$tmp/gitleaks.tar.gz" -C "$tmp"
+          sudo install -m 755 "$tmp/gitleaks" /usr/local/bin/gitleaks
+      - uses: actions/setup-node@v6
+        if: steps.verified-tree.outputs.run_full != 'false'
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+        if: steps.verified-tree.outputs.run_full != 'false'
+      - name: Secrets scan (range)
+        env:
+          RANGE_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [[ -n "$RANGE_BASE" && ! "$RANGE_BASE" =~ ^0+$ ]]; then
+            gitleaks git --no-banner --redact --verbose --log-opts="$RANGE_BASE..HEAD"
+          else
+            gitleaks git --no-banner --redact --verbose --log-opts="HEAD"
+          fi
+      # Self-contained subset of the local gate (the hook sources laptop dotagents; CI cannot).
+      - run: npm run check:actions
+        if: steps.verified-tree.outputs.run_full != 'false'
+      - run: npm run check:md
+        if: steps.verified-tree.outputs.run_full != 'false'
+      - name: Record validated PR tree
+        if: >-
+          success() && github.event_name == 'pull_request' &&
+          steps.verified-tree.outputs.tree != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: ci-tree-v1-${{ github.job }}-${{ steps.verified-tree.outputs.tree }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-tree-${{ github.job }}.txt
+          if-no-files-found: error
+          retention-days: 7

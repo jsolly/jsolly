@@ -1,0 +1,19 @@
+{
+	// Respect .gitignore so generated/local markdown is never linted.
+	"gitignore": true,
+	"config": {
+		"default": true,
+		"MD013": false,
+		"MD033": false,
+		"MD041": false,
+		"MD060": false,
+		"MD024": { "siblings_only": true }
+	},
+	"ignores": [
+		"node_modules/**",
+		".claude/**",
+		// CLAUDE.md is a symlink to its sibling AGENTS.md (already linted).
+		"CLAUDE.md",
+		"**/CLAUDE.md"
+	]
+}
