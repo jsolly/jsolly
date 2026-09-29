@@ -4,10 +4,10 @@
 
 Ship profile: `gate-only`
 
-**Integration: branch → PR → merge on green `CI / ci`.** `/ship` opens the PR and
-merges it once `ci` passes on the head — native auto-merge where the base branch's
-ruleset requires `ci`, otherwise a head-pinned manual squash
-(`~/code/dotagents/skills/ship/references/git-discipline.md` → Server-side gate).
+**Integration: branch → PR → merge on green `CI / ci`.** `/ship` opens the PR,
+arms native auto-merge as the backstop where the base branch's ruleset requires
+`ci`, and runs the head-pinned squash itself as soon as `ci` passes on the head
+(`~/code/dotagents/skills/ship/references/git-discipline.md` → Merge a same-repo self PR).
 Agents never push to `main`, change rulesets, or admin-merge.
 
 **CI owner: local.** Agent runs the full local gate before push; `/ship` babysits
