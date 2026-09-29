@@ -1,1 +1,8 @@
 .DS_STORE
+
+# Gate tooling
+node_modules/
+
+# Claude desktop nests session worktrees here; committed so tools that read only
+# .gitignore (markdownlint globs) skip them. Fleet canon: new-solly-repo row 13.
+.claude/worktrees/

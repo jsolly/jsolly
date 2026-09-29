@@ -1,0 +1,20 @@
+{
+  "name": "jsolly-tooling",
+  "private": true,
+  "description": "Dev tooling only (fleet gate: gitleaks, markdownlint, actionlint)",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "gate": "FLEET_DOC_FAST=0 bash .git-hooks/pre-commit",
+    "check:md": "bash scripts/lint-md.sh",
+    "check:actions": "bash scripts/check-actions.sh"
+  },
+  "devDependencies": {
+    "github-actionlint": "^1.7.12",
+    "markdownlint-cli2": "0.23.3"
+  },
+  "overrides": {
+    "adm-zip": "0.6.1"
+  }
+}
