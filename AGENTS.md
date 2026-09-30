@@ -4,19 +4,11 @@
 
 Ship profile: `gate-only`
 
-**Integration: branch → PR → merge on green `CI / ci`.** `/ship` opens the PR,
-arms native auto-merge as the backstop where the base branch's ruleset requires
-`ci`, and runs the head-pinned squash itself as soon as `ci` passes on the head
-(`~/code/dotagents/skills/ship/references/git-discipline.md` → Merge a same-repo self PR).
-Agents never push to `main`, change rulesets, or admin-merge.
-
-**CI owner: local.** Agent runs the full local gate before push; `/ship` babysits
-GitHub CI on the PR until merge (watch failures and fix forward). There is no
-fire-and-forget path.
+**Integration: branch → PR → merge on green `CI / ci`.** `/ship` merges per `skills/ship/references/git-discipline.md` → Merge a same-repo self PR (read the installed `/ship` reference). Agents never push to `main`, change rulesets, or admin-merge.
 
 Local gate before push: `npm run gate` (full working-tree checks, including an empty index).
 
-**Deploy:** `no-http-release-id (n/a)` — GitHub renders `README.md` on the [github.com/jsolly](https://github.com/jsolly) profile straight from `main`; there is no deploy step or release-id probe.
+**Deploy:** `none` — GitHub renders `README.md` on the [github.com/jsolly](https://github.com/jsolly) profile straight from `main`; there is no deploy step or release-id probe.
 
 ## Purpose
 
@@ -25,13 +17,15 @@ John's GitHub profile README. `README.md` is the whole page: HTML plus remote im
 ## Commands
 
 ```bash
-npm ci                              # gate tooling (markdownlint, actionlint)
+npm ci                              # gate tooling (markdownlint; pinned Actions binaries)
 npm run gate                        # full local gate, including an empty index
 npm run check:md                    # markdown lint
 npm run check:actions               # actionlint + shellcheck
 ```
 
-Git hooks: `git config core.hooksPath .git-hooks` (set once per clone).
+## Git hooks
+
+`core.hooksPath` is the dotagents dispatcher `~/.local/share/dotagents/hooks`, installed and set by the dotagents installers. Never point it at `.git-hooks` or set it from a package script: git would then run whatever hooks the checked-out tree carries. The dispatcher serves only `pre-commit`, and runs this repo’s tracked `.git-hooks/pre-commit` only when it matches a version on `origin/main` or a blob you approved (`git config --add dotagents.trustedHook <blob>`, printed by the refusal; approve only your own edit). Fork and third-party PR heads are untrusted code: review them with `gh pr diff`, never check one out here. Canon: dotagents `rules/agent-cloud-access.md` → GitHub.
 
 ## Local UI verification
 
@@ -64,3 +58,7 @@ until a drain re-kicks the new head (remove, then re-add `ow-ci`). Deferred runs
 report `ci-deferred` and cannot satisfy the required `ci` check. Skipped or
 absent checks never authorize a dependency merge. See the Dependabot CI kick in
 the canonical `dotagents/skills/optimize-workspaces/references/pr-drain.md`.
+
+## Fleet rollout
+
+Changes inside this repo ship normally. For changes other repos must adopt, link the merged PR on the one existing dotagents Todoist fleet-rollout task. Do not start that rollout or spawn per-repo chips, PRs or tasks from here. John authorizes one lead to walk the fleet after canon settles. Follow the installed `persist-todos-in-todoist` skill → Fleet rollout.

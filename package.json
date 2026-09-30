@@ -11,10 +11,6 @@
     "check:actions": "bash scripts/check-actions.sh"
   },
   "devDependencies": {
-    "github-actionlint": "^1.7.12",
     "markdownlint-cli2": "0.23.3"
-  },
-  "overrides": {
-    "adm-zip": "0.6.1"
   }
 }
