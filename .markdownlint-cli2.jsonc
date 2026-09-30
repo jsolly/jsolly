@@ -11,9 +11,6 @@
 	},
 	"ignores": [
 		"node_modules/**",
-		".claude/**",
-		// CLAUDE.md is a symlink to its sibling AGENTS.md (already linted).
-		"CLAUDE.md",
-		"**/CLAUDE.md"
+		".claude/**"
 	]
 }
