@@ -1,8 +1,5 @@
-# GitHub CI template — gate-only (no deploy: sandbox, jsolly, notebooks, etc.)
-# Copy to .github/workflows/ci.yml; add repo checks after check:md (e.g. check:notebooks).
-# Requires: .nvmrc, package.json scripts check:actions / check:md (scripts/check-actions.sh from
-# templates/github/check-actions.sh, scripts/lint-md.sh from the sibling), and
-# scripts/ci-verified-tree.sh from templates/github/ci-verified-tree.sh.
+# Repository-owned CI: full gate before recording verified-tree evidence.
+# No deployment or external configuration repository is required.
 
 name: CI
 run-name: >-
@@ -143,13 +140,9 @@ jobs:
           cache: npm
       - run: npm ci
         if: steps.verified-tree.outputs.run_full != 'false'
-      # A self-contained subset of the local gate: the pre-commit hook sources laptop dotagents,
-      # which runners lack, so CI never runs `npm run gate`.
-      - run: npm run check:actions
+      - name: Run complete repository gate
         if: steps.verified-tree.outputs.run_full != 'false'
-      - run: npm run check:md
-        if: steps.verified-tree.outputs.run_full != 'false'
-      # Customize below per repo (check:notebooks, Python checks, …).
+        run: npm run gate
       - name: Record validated PR tree
         if: >-
           success() && github.event_name == 'pull_request' &&
