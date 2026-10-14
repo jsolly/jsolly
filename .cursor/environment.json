@@ -1,4 +1,3 @@
 {
-	"install": "bash .cursor/install-cloud-skills.sh",
-	"repositoryDependencies": ["github.com/jsolly/dotagents"]
+  "install": "bash scripts/setup-agent-environment.sh"
 }
