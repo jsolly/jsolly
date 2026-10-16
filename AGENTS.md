@@ -62,6 +62,12 @@ report `ci-deferred` and cannot satisfy the required `ci` check. Skipped or
 absent checks never authorize a dependency merge. See the Dependabot CI kick in
 the repository CI workflow and local release instructions.
 
+## Configuration
+
+Relocatable tracked settings live under `config/<domain>/`, with one owner per
+setting. See [configuration guidance](config/README.md) for native exceptions
+and verification. This repository owns its configuration and consumers.
+
 ## Repository ownership
 
 This repo maintains its executable helpers, agent instructions and workflow
