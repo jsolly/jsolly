@@ -1,6 +1,6 @@
 # Configuration
 
-Relocatable tracked settings live here, grouped by the domain that owns them.
+This directory groups the repository's quality and hook settings by owner.
 Each setting has one authoritative owner. `quality/` contains lint settings:
 `quality/.markdownlint-cli2.jsonc` owns Markdownlint rules and ignore settings.
 `scripts/lint-md.sh` selects it explicitly after changing to the repository root,
@@ -19,10 +19,14 @@ supports an explicit reviewed upgrade from a bounded authenticated old installed
 snapshot; [hook trust](../docs/development.md#hook-trust) describes the procedure.
 No current-checkout legacy fallback or duplicated owner is retained.
 
-New relocatable settings belong in the relevant `config/<domain>/` directory;
-create only domains this repository uses. Preserve effective roots, scopes,
-imports and outputs when moving settings. Select CLI configuration explicitly. Keep a minimal native adapter only for a
-named active consumer without an equivalent supported path, and document it here.
+Move optional root-level settings to the relevant `config/<domain>/` directory
+or their natural owner. Preserve valid existing nested, component-owned and
+tool-owned configuration; test configuration may live under `tests/`. Create only
+domains this repository uses. Read the pinned tool's official configuration
+documentation and preserve effective roots, scopes, imports and outputs when
+moving settings. Prove that the actual consumers apply them. Select supported CLI
+paths explicitly. Keep a minimal native adapter only for a named active consumer
+without an equivalent supported path, and document it here.
 
 Validate with `npm ci`, `npm run check:md` and the full `npm run gate`. This
 repository requires no external configuration checkout, home links, generation
