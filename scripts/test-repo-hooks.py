@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 SOURCE = Path(__file__).resolve().parent.parent
 BUNDLE = ('config/agents/repository.json', 'gate/gate-lib.sh', 'gate/hooks/pre-commit',
@@ -274,6 +275,53 @@ fi
         self.assertNotEqual(self.git('config', '--get-all', 'repo.trustedGateBundle', check=False).returncode, 0)
 
 
+
+    def test_install_metadata_is_private_under_each_supported_umask(self):
+        hook = self.root / '.git-hooks/pre-commit'
+        for mask in (0o000, 0o022, 0o077):
+            with self.subTest(umask=oct(mask)):
+                hook.write_text(hook.read_text() + '\n# fresh snapshot for umask ' + oct(mask) + '\n')
+                digest = self.tool('digest', check=True).stdout.strip()
+                self.git('config', '--local', '--add', 'repo.trustedGateBundle', digest)
+                for _ in range(2):
+                    result = subprocess.run([sys.executable, '-I', str(self.root / 'scripts/repo-hooks.py'),
+                                             'install', '--root', str(self.root)], cwd=self.root,
+                                            env=self.env, capture_output=True, text=True, umask=mask)
+                    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                    self.tool('verify', check=True)
+                configured = subprocess.check_output(['git', '-C', str(self.root), 'config', '--local',
+                                                      '--get', 'core.hooksPath'], env=self.env, text=True).strip()
+                metadata = Path(configured).parent / 'installation.json'
+                self.assertEqual(stat.S_IMODE(metadata.stat().st_mode), 0o600)
+
+    def test_install_rejects_invalid_fresh_snapshot_before_registration(self):
+        spec = importlib.util.spec_from_file_location('fixture_current_hooks', self.root / 'scripts/repo-hooks.py')
+        current = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(current)
+        root, common, slug = current.context(self.root)
+        original_snapshot = current.snapshot
+        hook = self.root / '.git-hooks/pre-commit'
+        for failure in ('unsafe-mode', 'malformed-json'):
+            with self.subTest(failure=failure):
+                hook.write_text(hook.read_text() + '\n# new snapshot failure ' + failure + '\n')
+                digest, payload = current.bundle(root, slug)
+                self.git('config', '--local', '--add', 'repo.trustedGateBundle', digest)
+                config = common / 'config'
+                before = config.read_bytes()
+
+                def corrupt_publication(parent, selected_digest, selected_payload, selected_slug):
+                    version = original_snapshot(parent, selected_digest, selected_payload, selected_slug)
+                    metadata = version / 'installation.json'
+                    if failure == 'unsafe-mode':
+                        metadata.chmod(0o666)
+                    else:
+                        metadata.write_text('{invalid-json')
+                    return version
+
+                with patch.object(current, 'snapshot', side_effect=corrupt_publication):
+                    with self.assertRaises(ValueError):
+                        current.install(root, common, slug, digest, payload)
+                self.assertEqual(config.read_bytes(), before)
 
 
 class PublicMiseBootstrap(unittest.TestCase):
