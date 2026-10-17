@@ -64,9 +64,11 @@ the repository CI workflow and local release instructions.
 
 ## Configuration
 
-Relocatable tracked settings live under `config/<domain>/`, with one owner per
-setting. See [configuration guidance](config/README.md) for native exceptions
-and verification. This repository owns its configuration and consumers.
+Move optional root-level settings to `config/<domain>/` or their natural owner.
+Keep valid nested, component-owned and tool-owned configuration in place; test
+configuration may live under `tests/`. Give each setting one owner. See
+[configuration guidance](config/README.md) for native exceptions and verification.
+This repository owns its configuration and consumers.
 
 ## Repository ownership
 
