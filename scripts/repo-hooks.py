@@ -191,6 +191,7 @@ def snapshot(parent: Path, digest: str, payload: dict[str, bytes], slug: str) ->
         if bundle(staging, slug)[0] != digest:
             raise ValueError('Snapshot verification failed')
         (staging / 'installation.json').write_text(json.dumps({'version': 2, 'manifest': MANIFEST, 'repo': slug, 'digest': digest}))
+        (staging / 'installation.json').chmod(0o600)
         (staging / 'hooks').mkdir(mode=0o700)
         (staging / 'hooks/pre-commit').write_bytes(payload['gate/hooks/pre-commit'])
         (staging / 'hooks/pre-commit').chmod(0o755)
@@ -284,6 +285,7 @@ def install(root: Path, common: Path, slug: str, digest: str, payload: dict[str,
     hooks = version / 'hooks'
     # Validate the entire destination before making it live, including an existing
     # digest directory left by a partial or interrupted installation.
+    snapshot_bundle(version, slug)
     verify_dispatcher(version)
     git(root, 'config', '--local', 'core.hooksPath', str(hooks))
     for row in str(git(root, 'worktree', 'list', '--porcelain')).splitlines():
