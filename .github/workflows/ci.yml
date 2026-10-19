@@ -138,6 +138,11 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      - uses: astral-sh/setup-uv@v10.1.0
+        if: steps.verified-tree.outputs.run_full != 'false'
+        with:
+          version: "0.12.22"
+          enable-cache: false
       - run: npm ci
         if: steps.verified-tree.outputs.run_full != 'false'
       - name: Run complete repository gate

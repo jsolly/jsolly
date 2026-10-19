@@ -31,3 +31,6 @@ without an equivalent supported path, and document it here.
 Validate with `npm ci`, `npm run check:md` and the full `npm run gate`. This
 repository requires no external configuration checkout, home links, generation
 step or automatic synchronization.
+
+`python/pytest.ini` owns Python test discovery, including the existing
+`test-*.py` hook fixtures. `npm run test:python` selects it explicitly.

@@ -424,7 +424,3 @@ cp "$BOOTSTRAP_PAYLOAD" "$2"
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(destination.read_text(), 'existing useful content\n')
         self.assertFalse(self.downloads.exists())
-
-
-if __name__ == '__main__':
-    unittest.main()
