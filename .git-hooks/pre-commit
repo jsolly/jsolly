@@ -21,6 +21,6 @@ gate_require_node              # enforce the pinned Node (.nvmrc), not whatever'
 run_step "actionlint"    npm run check:actions
 run_step "markdown lint" npm run check:md       # whole tree: the lib lints only when .md is staged
 
-run_step "repository hook trust" bash scripts/repo-python.sh scripts/test-repo-hooks.py
+run_step "repository hook trust" npm run test:python
 
 echo "✓ pre-commit gate passed — commit will land; no deploy (gate-only)."

@@ -9,7 +9,8 @@
     "gate": "FLEET_DOC_FAST=0 bash .git-hooks/pre-commit",
     "check:md": "bash scripts/lint-md.sh",
     "check:actions": "bash scripts/check-actions.sh",
-    "worktree:init": "npm ci"
+    "worktree:init": "npm ci",
+    "test:python": "uvx --from pytest==9.0.2 pytest -c config/python/pytest.ini"
   },
   "devDependencies": {
     "markdownlint-cli2": "0.23.3"

@@ -94,3 +94,10 @@ prove infrastructure adoption. Never bypass a dirty-infrastructure deploy refusa
 Repository instructions and access rules are maintained here. Personal home
 configuration and optional global skills remain separate and are not installed,
 removed or overwritten by repo setup.
+
+## Python tests
+
+Run `mise exec -- npm run test:python` for the repository hook and bootstrap
+regressions. The gate uses the same pytest 9.0.2 runner through uvx; mise pins uv.
+The existing TestCase assertions, cleanup and subtests remain intact under
+pytest. Direct unittest runner entrypoints have been retired.
