@@ -41,8 +41,9 @@ The fleet No-CDN rule is n/a here: GitHub strips `<script>` and `<style>` from r
 
 ## AWS
 
-n/a — no AWS resources or deployment. Cloud setup installs repo-pinned public
-tools and hooks and does not run `.cursor/aws-oidc-login.sh` or require AWS login.
+No AWS resources or deployment. Cloud setup installs repo-pinned public tools
+and hooks without AWS login. Separately authorized native AWS reads follow
+[development access](docs/development.md#infrastructure-and-access).
 
 ## Verified-tree CI
 
