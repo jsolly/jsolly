@@ -82,14 +82,19 @@ intended deployment and exact-release smoke when the repository requires them.
 
 ## Infrastructure and access
 
-Use existing scoped identities. Agents do not recover credentials, broaden grants
-or run destructive infrastructure/database operations. Keep read-only checks on
-the read-only role, including the repo-owned credential-isolation wrapper.
-`check:infra-pending` reports merged infrastructure inputs not yet deployed; AWS
-CloudFormation drift detection separately reports manual live-resource changes.
-Infrastructure apply and protection changes remain a concrete handoff to the
-human owner, with exact repository commands. A successful code deploy does not
-prove infrastructure adoption. Never bypass a dirty-infrastructure deploy refusal.
+This profile repository has no AWS stack, infrastructure checks or deployment.
+Setup and gate use public tools and need no AWS login. Separately authorized AWS
+reads use exactly one native production `aws_mcp` connection for
+`agent@jsolly.com`, authorized as `AgentMcp` in account `730335616323`. Do not
+install an agent AWS profile or credential-process helper, export OAuth
+credentials, add a second MCP connection or bridge it into local CLI calls.
+Preserve AWS Core for skills and public knowledge, named human administrator
+profiles, and application/provider credentials.
+
+Source cleanup does not remove installed helpers, cached sessions, saved provider
+settings or live IAM trust. Provider isolation and legacy credential retirement
+require their separate acceptance evidence. Agents do not recover credentials,
+broaden grants or run destructive infrastructure/database operations.
 
 Repository instructions and access rules are maintained here. Personal home
 configuration and optional global skills remain separate and are not installed,
