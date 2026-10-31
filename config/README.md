@@ -33,4 +33,4 @@ repository requires no external configuration checkout, home links, generation
 step or automatic synchronization.
 
 `python/pytest.ini` owns Python test discovery: the `test-*.py` hook fixtures and
-the README link-checker tests. `npm run test:python` selects it explicitly.
+the README link-checker and README contract tests. `npm run test:python` selects it explicitly.

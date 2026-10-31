@@ -35,8 +35,12 @@ register executable hooks. See [development and release](docs/development.md).
 No local server or build: GitHub renders `README.md`. Once `/ship` pushes, review the pushed head at
 `https://github.com/jsolly/jsolly/blob/<head-sha>/README.md` in the harness browser (the SHA URL
 survives the squash merge's branch deletion; the loopback-only smoke fallback cannot reach
-github.com). After merge, the live page is <https://github.com/jsolly>. No auth. Check that the profile content renders and its images and links remain usable;
-record the inspected head and live URL in the release report.
+github.com). After merge, the live page is <https://github.com/jsolly>. No auth. Check that the profile content renders and its images and links remain usable
+in both GitHub themes: capture or explicitly observe the page in light and in dark, and exercise
+every `<picture>` / `prefers-color-scheme` source. Text in any image must reach 4.5:1 contrast
+(3:1 for large text) against each theme's canvas (`#ffffff` light, `#0d1117` dark). Record the
+inspected head, live URL, both themes' observations and the measured contrast ratio of each
+text-bearing image against each canvas (or that there are none) in the release report.
 The fleet No-CDN rule is n/a here: GitHub strips `<script>` and `<style>` from rendered READMEs.
 
 ## AWS

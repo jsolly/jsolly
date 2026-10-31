@@ -103,7 +103,7 @@ removed or overwritten by repo setup.
 ## Python tests
 
 Run `mise exec -- npm run test:python` for the repository hook, bootstrap and
-README link-checker regressions. The gate uses the same pytest 9.0.2 runner through uvx; mise pins uv.
+README link-checker and README contract regressions. The gate uses the same pytest 9.0.2 runner through uvx; mise pins uv.
 The existing TestCase assertions, cleanup and subtests remain intact under
 pytest. Direct unittest runner entrypoints have been retired.
 
