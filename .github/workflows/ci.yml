@@ -46,6 +46,8 @@ jobs:
       (github.event.action != 'labeled' && github.event.pull_request.user.login != 'dependabot[bot]') ||
       (github.event.action == 'labeled' && github.event.label.name == 'ow-ci')
     runs-on: ubuntu-24.04-arm
+    # A stalled step fails fast instead of holding the required check to the 6-hour default.
+    timeout-minutes: 10
     steps:
       # Keep full history: Secrets scan (range) below scans a commit range, not just the checked-out tree.
       - uses: actions/checkout@v7
@@ -60,6 +62,7 @@ jobs:
         run: |
           tmp=$(mktemp -d)
           curl --fail --location --silent --show-error \
+            --connect-timeout 10 --max-time 120 --retry 3 --retry-connrefused \
             https://github.com/gitleaks/gitleaks/releases/download/v8.24.2/gitleaks_8.24.2_linux_arm64.tar.gz \
             --output "$tmp/gitleaks.tar.gz"
           echo "574a6d52573c61173add7ddb5e3cc68c0e82cb0735818a1eeb9a0a2de1643fbc  $tmp/gitleaks.tar.gz" | sha256sum --check

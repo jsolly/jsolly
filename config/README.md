@@ -32,5 +32,5 @@ Validate with `npm ci`, `npm run check:md` and the full `npm run gate`. This
 repository requires no external configuration checkout, home links, generation
 step or automatic synchronization.
 
-`python/pytest.ini` owns Python test discovery, including the existing
-`test-*.py` hook fixtures. `npm run test:python` selects it explicitly.
+`python/pytest.ini` owns Python test discovery: the `test-*.py` hook fixtures and
+the README link-checker tests. `npm run test:python` selects it explicitly.

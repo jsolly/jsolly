@@ -1,0 +1,54 @@
+# README health: every link and image on the public profile page still resolves.
+# Operator guide (alerting, re-enabling the schedule): docs/development.md -> README health.
+
+name: README health
+
+on:
+  schedule:
+    - cron: "23 13 * * 1" # Mondays 13:23 UTC
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - README.md
+      - scripts/check-readme-links.py
+      - .github/workflows/readme-health.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: readme-health
+  cancel-in-progress: false
+
+jobs:
+  readme-health:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Check README links and images
+        # Below the job timeout, so a hung host fails this step (and notifies) instead of
+        # cancelling the job; output streams live, so the log names the host it stalled on.
+        timeout-minutes: 8
+        shell: bash
+        run: |
+          log="$RUNNER_TEMP/readme-health.log"
+          # Failure lines carry third-party header text: stop workflow-command parsing around them.
+          token="$(od -An -N16 -tx1 /dev/urandom | tr -d ' \n')"
+          echo "::stop-commands::$token"
+          status=0
+          # pipefail (Actions' bash default) returns the checker's status, not tee's.
+          bash scripts/repo-python.sh scripts/check-readme-links.py README.md 2>&1 | tee "$log" || status=$?
+          echo "::$token::"
+          if [[ "$status" != 0 ]]; then
+            {
+              printf '## README health check failed\n\n~~~text\n'
+              cat "$log"
+              printf '~~~\n'
+            } >>"$GITHUB_STEP_SUMMARY"
+            echo "::error title=README health::Broken README references on the public profile page; see the job summary."
+          fi
+          exit "$status"

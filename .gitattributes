@@ -1,0 +1,7 @@
+# README.md is this repository's deliverable; the rest is gate, hook and CI tooling.
+# Keep that tooling out of GitHub's language statistics so the profile repo is not
+# labelled by its scripts (Linguist reads these attributes on the default branch).
+scripts/** linguist-detectable=false
+gate/** linguist-detectable=false
+.git-hooks/** linguist-detectable=false
+.cursor/** linguist-detectable=false
