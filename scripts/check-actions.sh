@@ -54,7 +54,7 @@ unpack() {
     shasum -a 256 -c --status <<<"$digest  $cached" \
       || { echo "✗ cached $tool archive is corrupt: remove $cached and rerun" >&2; exit 1; }
   else
-    curl --fail --location --silent --show-error --connect-timeout 10 --max-time 120 "$url" --output "$work/$tool.tar.gz" \
+    curl --fail --location --silent --show-error --connect-timeout 10 --max-time 120 --retry 3 --retry-connrefused "$url" --output "$work/$tool.tar.gz" \
       || { echo "✗ could not download $tool from $url (the first run after npm ci needs network)" >&2; exit 1; }
     shasum -a 256 -c --status <<<"$digest  $work/$tool.tar.gz" \
       || { echo "✗ $tool from $url does not match its pinned SHA-256 — verify the upstream release before changing the pin" >&2; exit 1; }

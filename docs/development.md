@@ -102,7 +102,38 @@ removed or overwritten by repo setup.
 
 ## Python tests
 
-Run `mise exec -- npm run test:python` for the repository hook and bootstrap
-regressions. The gate uses the same pytest 9.0.2 runner through uvx; mise pins uv.
+Run `mise exec -- npm run test:python` for the repository hook, bootstrap and
+README link-checker regressions. The gate uses the same pytest 9.0.2 runner through uvx; mise pins uv.
 The existing TestCase assertions, cleanup and subtests remain intact under
 pytest. Direct unittest runner entrypoints have been retired.
+
+## README health
+
+`.github/workflows/readme-health.yml` runs `scripts/check-readme-links.py` weekly,
+on manual dispatch, and on each push to main that changes the page, the checker or
+the workflow. Every `href`, `src` and `srcset` in `README.md` must be an https URL
+answering 2xx, and images must answer `image/*` (`mailto:` and `#` links are not
+fetched). Write profile links as HTML
+`<a href>` and images as `<img src>`: link forms the checker cannot verify fail
+instead of passing unchecked, as its module docstring lists. The gate's Python
+tests also parse the shipped `README.md` offline, so an unverifiable form fails
+PR CI before it reaches main. Run the same check locally from the repository root:
+
+```bash
+bash scripts/repo-python.sh scripts/check-readme-links.py README.md
+```
+
+A broken reference fails the run, with the failures in an error annotation and the
+job summary. Issues are disabled on this repository, so GitHub's failed-workflow
+notification is the alert. GitHub sends it to the account that last changed the
+workflow's `cron` line or, after a disable, to whoever re-enabled it. Only the
+owner account (`jsolly`) should edit the schedule or re-enable the workflow, so
+alerts keep reaching John.
+
+GitHub disables scheduled workflows after 60 days without repository activity, and
+a disabled workflow runs on no trigger, push included. If the Actions tab shows
+README health as disabled, re-enable it there as `jsolly`, or run as `jsolly`:
+
+```bash
+gh workflow enable readme-health.yml --repo jsolly/jsolly
+```
