@@ -10,7 +10,8 @@
     "check:md": "bash scripts/lint-md.sh",
     "check:actions": "bash scripts/check-actions.sh",
     "worktree:init": "npm ci",
-    "test:python": "uvx --from pytest==9.0.2 pytest -c config/python/pytest.ini"
+    "test:python": "npm run check:python && uvx --from pytest==9.0.2 pytest -c config/python/pytest.ini",
+    "check:python": "uvx --from mypy==2.4.1 --with pytest==9.0.2 mypy --config-file config/python/mypy.ini"
   },
   "devDependencies": {
     "markdownlint-cli2": "0.23.3"

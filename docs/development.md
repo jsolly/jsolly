@@ -102,6 +102,20 @@ removed or overwritten by repo setup.
 
 ## Python tests
 
+`npm run check:python` runs pinned mypy 2.4.1 in strict mode for the README
+link checker and both README test modules, targeting the Python 3.11 floor.
+`npm run test:python` runs this check before pytest, so the complete local and CI
+gates enforce it. Pytest 9.0.2 is present in the checker environment to type fixtures.
+The dynamically loaded CLI in the link tests has a precise protocol; the real
+implementation is checked separately and exercised by those same offline tests.
+
+Coverage is intentionally partial: `scripts/repo-hooks.py`,
+`scripts/test-repo-hooks.py` and the frozen
+`scripts/fixtures/repo-hooks-legacy.py` remain outside this initial typing slice
+while the separate hook rollout owns them. This does not establish strict typing
+for the whole repository. No runtime or test file within the README slice is
+excluded.
+
 Run `mise exec -- npm run test:python` for the repository hook, bootstrap and
 README link-checker and README contract regressions. The gate uses the same pytest 9.0.2 runner through uvx; mise pins uv.
 The existing TestCase assertions, cleanup and subtests remain intact under
