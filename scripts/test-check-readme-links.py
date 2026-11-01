@@ -5,15 +5,46 @@ import http.server
 import socket
 import threading
 import urllib.parse
+from collections.abc import Callable, Iterator
 from pathlib import Path
+from typing import Protocol, cast
 
 import pytest
+
+
+class _Reference(Protocol):
+    @property
+    def url(self) -> str: ...
+
+    @property
+    def is_image(self) -> bool: ...
+
+
+class _ReferenceConstructor(Protocol):
+    def __call__(self, url: str, is_image: bool) -> _Reference: ...
+
+
+class _Checker(Protocol):
+    """The public interface of the separately checked, dynamically loaded CLI."""
+
+    Reference: _ReferenceConstructor
+    ATTEMPTS: int
+    TIMEOUT_SECONDS: float
+    REMOTE_SCHEMES: tuple[str, ...]
+    _sleep: Callable[[float], None]
+
+    def extract_references(self, text: str) -> tuple[list[_Reference], list[str]]: ...
+    def check_reference(self, reference: _Reference) -> str | None: ...
+    def main(self, argv: list[str]) -> int: ...
+
 
 _spec = importlib.util.spec_from_file_location(
     "check_readme_links", Path(__file__).resolve().parent / "check-readme-links.py"
 )
-checker = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(checker)
+assert _spec is not None and _spec.loader is not None
+_module = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_module)
+checker = cast(_Checker, _module)
 Reference = checker.Reference
 
 # The profile banner as README.md has shipped it: a raw `&center=` query parameter that a
@@ -46,7 +77,7 @@ class _Handler(http.server.BaseHTTPRequestHandler):
     hits: dict[str, int] = {}
     requested: list[str] = []
 
-    def do_GET(self):  # noqa: N802 (http.server API)
+    def do_GET(self) -> None:  # noqa: N802 (http.server API)
         _Handler.requested.append(self.path)
         path = urllib.parse.urlsplit(self.path).path
         hits = _Handler.hits[path] = _Handler.hits.get(path, 0) + 1
@@ -74,12 +105,12 @@ class _Handler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def log_message(self, *args):
+    def log_message(self, format: str, *args: object) -> None:
         pass
 
 
 @pytest.fixture
-def server(monkeypatch):
+def server(monkeypatch: pytest.MonkeyPatch) -> Iterator[str]:
     """A loopback HTTP server; the checker's https-only rule is widened to reach it."""
     monkeypatch.setattr(checker, "REMOTE_SCHEMES", ("https://", "http://"))
     _Handler.hits, _Handler.requested = {}, []
@@ -94,7 +125,7 @@ def server(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
-def backoff(monkeypatch):
+def backoff(monkeypatch: pytest.MonkeyPatch) -> list[float]:
     """Record retry backoff instead of sleeping through it."""
     slept: list[float] = []
     monkeypatch.setattr(checker, "_sleep", slept.append)
@@ -102,13 +133,15 @@ def backoff(monkeypatch):
 
 
 @pytest.fixture
-def closed_port():
+def closed_port() -> int:
     with socket.socket() as probe:
         probe.bind(("127.0.0.1", 0))
-        return probe.getsockname()[1]
+        port: object = probe.getsockname()[1]
+        assert isinstance(port, int)
+        return port
 
 
-def test_profile_page_references_are_found_as_github_renders_them():
+def test_profile_page_references_are_found_as_github_renders_them() -> None:
     references, unsupported = checker.extract_references(PROFILE_HTML)
     assert references == [
         Reference("https://readme-typing-svg.herokuapp.com?color=E6EDF3&lines=Hello,+world", is_image=True),
@@ -132,11 +165,11 @@ def test_profile_page_references_are_found_as_github_renders_them():
          [Reference("https://a.example/x.svg", is_image=True), Reference("https://a.example/y.svg", is_image=True)]),
     ],
 )
-def test_attributes_are_read_as_github_renders_them(html, expected):
+def test_attributes_are_read_as_github_renders_them(html: str, expected: list[_Reference]) -> None:
     assert checker.extract_references(html) == (expected, [])
 
 
-def test_banner_query_string_is_requested_literally(server):
+def test_banner_query_string_is_requested_literally(server: str) -> None:
     # Regression: Python < 3.13's HTMLParser decoded `&cent` in `&center=` to `¢`, so the
     # request could not be encoded and every run crashed while the page was healthy.
     [reference], _ = checker.extract_references(
@@ -162,12 +195,12 @@ def test_banner_query_string_is_requested_literally(server):
         ("Files at ftp://files.example/x", "bare URL"),
     ],
 )
-def test_link_forms_the_checker_cannot_verify_fail_instead_of_passing(snippet, form):
+def test_link_forms_the_checker_cannot_verify_fail_instead_of_passing(snippet: str, form: str) -> None:
     _, unsupported = checker.extract_references(f'<a href="https://www.jsolly.com/">site</a>\n{snippet}')
     assert unsupported and unsupported[0].startswith(form)
 
 
-def test_a_healthy_profile_passes_and_says_so(server, tmp_path, capsys):
+def test_a_healthy_profile_passes_and_says_so(server: str, tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     readme = tmp_path / "README.md"
     readme.write_text(f'<a href="{server}/ok">site</a>\n<img alt="Banner" src="{server}/image.svg" />')
     assert checker.main(["check", str(readme)]) == 0
@@ -176,64 +209,68 @@ def test_a_healthy_profile_passes_and_says_so(server, tmp_path, capsys):
     assert err == ""
 
 
-def test_a_retired_page_is_reported_after_every_retry(server, backoff):
+def test_a_retired_page_is_reported_after_every_retry(server: str, backoff: list[float]) -> None:
     failure = checker.check_reference(Reference(f"{server}/retired", False))
     assert failure == f"{server}/retired: HTTP 404 after {checker.ATTEMPTS} attempts"
     assert _Handler.hits["/retired"] == checker.ATTEMPTS
     assert backoff == [2, 4]
 
 
-def test_a_brief_host_outage_is_retried_then_passes(server, backoff):
+def test_a_brief_host_outage_is_retried_then_passes(server: str, backoff: list[float]) -> None:
     assert checker.check_reference(Reference(f"{server}/flaky-503-once", False)) is None
     assert _Handler.hits["/flaky-503-once"] == 2
     assert backoff == [2]
 
 
 @pytest.mark.parametrize("path", ["/garbage-status-once", "/drop-once"])
-def test_a_protocol_hiccup_is_retried_then_passes(server, path):
+def test_a_protocol_hiccup_is_retried_then_passes(server: str, path: str) -> None:
     assert checker.check_reference(Reference(f"{server}{path}", False)) is None
     assert _Handler.hits[path] == 2
 
 
-def test_a_hung_host_times_out_and_is_reported_after_every_retry(server, monkeypatch):
+def test_a_hung_host_times_out_and_is_reported_after_every_retry(server: str, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(checker, "TIMEOUT_SECONDS", 0.1)
     failure = checker.check_reference(Reference(f"{server}/hang", False))
+    assert failure is not None
     assert failure.startswith(f"{server}/hang: request failed (")
     assert failure.endswith(f"after {checker.ATTEMPTS} attempts")
     assert _Handler.hits["/hang"] == checker.ATTEMPTS
 
 
-def test_an_image_host_serving_a_web_page_fails(server):
+def test_an_image_host_serving_a_web_page_fails(server: str) -> None:
     failure = checker.check_reference(Reference(f"{server}/html-not-image", True))
     assert failure == f"{server}/html-not-image: image answered with content-type text/html"
 
 
-def test_an_uppercase_image_content_type_passes(server):
+def test_an_uppercase_image_content_type_passes(server: str) -> None:
     assert checker.check_reference(Reference(f"{server}/IMAGE.svg", True)) is None
 
 
-def test_remote_header_text_cannot_start_a_report_line(server):
+def test_remote_header_text_cannot_start_a_report_line(server: str) -> None:
     failure = checker.check_reference(Reference(f"{server}/folded-type", True))
+    assert failure is not None
     assert "\n" not in failure and "\r" not in failure
     assert failure.startswith(f"{server}/folded-type: image answered with content-type text/html ~~~ ")
 
 
-def test_an_unreachable_host_is_reported_after_every_retry(closed_port, monkeypatch):
+def test_an_unreachable_host_is_reported_after_every_retry(closed_port: int, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(checker, "REMOTE_SCHEMES", ("https://", "http://"))
     url = f"http://127.0.0.1:{closed_port}/"
     failure = checker.check_reference(Reference(url, False))
+    assert failure is not None
     assert failure.startswith(f"{url}: request failed (")
     assert failure.endswith(f"after {checker.ATTEMPTS} attempts")
 
 
 @pytest.mark.parametrize("suffix", ["/a b", "/café"])
-def test_a_malformed_url_is_reported_without_crashing_the_run(server, suffix):
+def test_a_malformed_url_is_reported_without_crashing_the_run(server: str, suffix: str) -> None:
     failure = checker.check_reference(Reference(f"{server}{suffix}", False))
+    assert failure is not None
     assert failure.startswith(f"{server}{suffix}: malformed URL (")
     assert _Handler.hits == {}
 
 
-def test_an_empty_image_source_fails():
+def test_an_empty_image_source_fails() -> None:
     assert checker.extract_references('<img alt="broken" src="">') == ([Reference("", is_image=True)], [])
     assert checker.check_reference(Reference("", True)) == "empty image source"
 
@@ -241,19 +278,19 @@ def test_an_empty_image_source_fails():
 @pytest.mark.parametrize(
     "url", ["assets/banner.svg", "/assets/banner.svg", "ftp://example.com/x", "http://www.jsolly.com/"]
 )
-def test_a_reference_that_is_not_a_remote_https_url_fails(url):
+def test_a_reference_that_is_not_a_remote_https_url_fails(url: str) -> None:
     assert checker.check_reference(Reference(url, True)) == (
         f"{url}: not an https URL (README.md is HTML plus remote https images)"
     )
 
 
 @pytest.mark.parametrize("url", ["mailto:hello@jsolly.com", "#top"])
-def test_email_and_in_page_links_pass_without_a_request(server, url):
+def test_email_and_in_page_links_pass_without_a_request(server: str, url: str) -> None:
     assert checker.check_reference(Reference(url, False)) is None
     assert _Handler.requested == []
 
 
-def test_every_problem_is_reported_in_one_run(server, tmp_path, capsys):
+def test_every_problem_is_reported_in_one_run(server: str, tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     readme = tmp_path / "README.md"
     readme.write_text(
         f'<a href="{server}/a b">bad</a> <img alt="b" src="{server}/retired" /> <a href="{server}/ok">ok</a>\n'
@@ -267,14 +304,14 @@ def test_every_problem_is_reported_in_one_run(server, tmp_path, capsys):
     assert "- Markdown link syntax near" in err
 
 
-def test_a_page_with_no_references_is_not_a_pass(tmp_path, capsys):
+def test_a_page_with_no_references_is_not_a_pass(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     readme = tmp_path / "README.md"
     readme.write_text("<h1>No links</h1>")
     assert checker.main(["check", str(readme)]) == 1
     assert "refusing to report a vacuous pass" in capsys.readouterr().err
 
 
-def test_the_shipped_readme_uses_only_forms_the_checker_verifies():
+def test_the_shipped_readme_uses_only_forms_the_checker_verifies() -> None:
     # Offline, so the gate (PR CI) catches an unverifiable link form before it reaches main.
     readme = Path(__file__).resolve().parent.parent / "README.md"
     references, unsupported = checker.extract_references(readme.read_text(encoding="utf-8"))

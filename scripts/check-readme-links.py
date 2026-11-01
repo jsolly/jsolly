@@ -17,6 +17,7 @@ import urllib.request
 from dataclasses import dataclass
 from html.parser import HTMLParser
 from pathlib import Path
+from typing import cast
 
 ATTEMPTS = 3
 TIMEOUT_SECONDS = 20
@@ -45,7 +46,8 @@ class Reference:
 
 def _srcset_urls(value: str) -> list[str]:
     """Candidate URLs per the HTML srcset rules: a URL runs to whitespace; commas separate."""
-    urls, position, length = [], 0, len(value)
+    urls: list[str] = []
+    position, length = 0, len(value)
     while True:
         while position < length and (value[position].isspace() or value[position] == ","):
             position += 1
@@ -113,7 +115,8 @@ def _printable(text: str) -> str:
 def _fetch(url: str) -> tuple[int, str]:
     request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     try:
-        with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS) as response:
+        # urlopen's stub returns Any; HTTP(S) requests return HTTPResponse.
+        with cast(http.client.HTTPResponse, urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS)) as response:
             response.read(1)
             return response.status, response.headers.get("Content-Type", "")
     except urllib.error.HTTPError as error:
@@ -154,8 +157,8 @@ def main(argv: list[str]) -> int:
         print("usage: check-readme-links.py <README.md>", file=sys.stderr)
         return 2
     references, failures = extract_references(Path(argv[1]).read_text(encoding="utf-8"))
-    for failure in failures:
-        print(f"- {failure}", file=sys.stderr, flush=True)
+    for unsupported in failures:
+        print(f"- {unsupported}", file=sys.stderr, flush=True)
     if not references and not failures:
         print(f"✗ {argv[1]} has no links or images; refusing to report a vacuous pass", file=sys.stderr)
         return 1

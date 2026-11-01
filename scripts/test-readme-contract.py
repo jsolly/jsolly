@@ -34,8 +34,9 @@ class _Page(HTMLParser):
         values = dict(attrs)
         if "target" in values:
             self.target_tags.append(tag)
-        if tag == "a" and values.get("href"):
-            self.hrefs.append(values["href"])
+        href = values.get("href")
+        if tag == "a" and href:
+            self.hrefs.append(href)
         if tag == "img":
             self.image_alts.append(values.get("alt"))
         if tag not in VOID_TAGS:
@@ -63,24 +64,24 @@ def _page() -> _Page:
     return page
 
 
-def test_the_profile_states_the_current_role_on_its_first_screen():
+def test_the_profile_states_the_current_role_on_its_first_screen() -> None:
     assert ROLE in " ".join("".join(_page().text).split())
 
 
-def test_the_profile_links_the_site_resume_blog_and_contact_page():
+def test_the_profile_links_the_site_resume_blog_and_contact_page() -> None:
     hrefs = _page().hrefs
     assert [link for link in REQUIRED_LINKS if link not in hrefs] == []
 
 
-def test_every_profile_image_has_descriptive_alt_text():
+def test_every_profile_image_has_descriptive_alt_text() -> None:
     alts = _page().image_alts
     assert [alt for alt in alts if not alt or alt.strip().lower() in PLACEHOLDER_ALTS] == []
 
 
-def test_the_profile_uses_no_target_attribute_github_would_strip():
+def test_the_profile_uses_no_target_attribute_github_would_strip() -> None:
     assert _page().target_tags == []
 
 
-def test_the_profile_html_is_balanced():
+def test_the_profile_html_is_balanced() -> None:
     page = _page()
     assert (page.open_tags, page.mismatched) == ([], [])
