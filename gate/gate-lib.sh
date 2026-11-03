@@ -412,9 +412,11 @@ gate_require_node() {
   local nvmrc="${ROOT:-.}/.nvmrc" want have
   command -v node >/dev/null 2>&1 || {
     echo "✗ node not on PATH — the gate runs node/npm; install Node and 'nvm use' before committing" >&2; return 1; }
-  [ -f "$nvmrc" ] || { echo "✗ no .nvmrc at $nvmrc — cannot assert the pinned Node major" >&2; return 1; }
-  want="$(tr -cd '0-9.' < "$nvmrc")"; want="${want%%.*}"
-  have="$(node -v | tr -cd '0-9.')"; have="${have%%.*}"
+  [ -f "$nvmrc" ] || { echo "✗ no .nvmrc at $nvmrc — cannot assert the pinned Node version" >&2; return 1; }
+  want="$(tr -cd '0-9.' < "$nvmrc")"
+  have="$(node -v | tr -cd '0-9.')"
+  # A full numeric pin asserts the actual release; a major-only pin retains its scope.
+  [[ "$want" == *.* ]] || have="${have%%.*}"
   if [ -z "$want" ]; then
     # A non-numeric .nvmrc (e.g. `lts/iron`, `node`) carries no major to assert — degrade to the
     # node-present check above rather than print a bogus "matches v" line against an empty version.
@@ -422,7 +424,7 @@ gate_require_node() {
     return 0
   fi
   if [ "$have" != "$want" ]; then
-    echo "✗ Node major mismatch: running v$have but .nvmrc pins v$want — run 'nvm use' (or 'nvm install $want') so the gate runs on the pinned runtime" >&2
+    echo "✗ Node version mismatch: running v$have but .nvmrc pins v$want — run 'nvm use' (or 'nvm install $want') so the gate runs on the pinned runtime" >&2
     return 1
   fi
   echo "• node v$have (matches .nvmrc v$want)"

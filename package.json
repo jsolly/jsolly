@@ -3,7 +3,8 @@
   "private": true,
   "description": "Dev tooling only (fleet gate: gitleaks, markdownlint, actionlint)",
   "engines": {
-    "node": "24.x"
+    "node": "24.x",
+    "npm": ">=11.10.0"
   },
   "scripts": {
     "gate": "FLEET_DOC_FAST=0 bash .git-hooks/pre-commit",
@@ -11,9 +12,18 @@
     "check:actions": "bash scripts/check-actions.sh",
     "worktree:init": "npm ci",
     "test:python": "npm run check:python && uvx --from pytest==9.0.2 pytest -c config/python/pytest.ini",
-    "check:python": "uvx --from mypy==2.4.1 --with pytest==9.0.2 mypy --config-file config/python/mypy.ini"
+    "check:python": "uvx --from mypy==2.4.1 --with pytest==9.0.2 mypy --config-file config/python/mypy.ini",
+    "test:math": "node --test scripts/test-math-compat.mjs"
   },
   "devDependencies": {
-    "markdownlint-cli2": "0.23.3"
+    "markdownlint-cli2": "0.24.0"
+  },
+  "overrides": {
+    "micromark-extension-math": {
+      "katex": "0.18.2"
+    },
+    "markdownlint": {
+      "re2js": "2.8.7"
+    }
   }
 }

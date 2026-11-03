@@ -22,6 +22,7 @@ run_step "workflow security" python3 -I "$_repo_owned_gate_root/gate/security-sc
 run_step "actionlint"    npm run check:actions
 run_step "markdown lint" npm run check:md       # whole tree: the lib lints only when .md is staged
 
+run_step "math dependency compatibility" npm run test:math
 run_step "repository hook trust" npm run test:python
 
 echo "✓ pre-commit gate passed — commit will land; no deploy (gate-only)."

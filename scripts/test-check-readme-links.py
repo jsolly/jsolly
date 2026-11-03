@@ -36,6 +36,7 @@ class _Checker(Protocol):
     def extract_references(self, text: str) -> tuple[list[_Reference], list[str]]: ...
     def check_reference(self, reference: _Reference) -> str | None: ...
     def main(self, argv: list[str]) -> int: ...
+    def _fetch(self, url: str) -> tuple[int, str]: ...
 
 
 _spec = importlib.util.spec_from_file_location(
@@ -86,6 +87,20 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             return
         if path == "/drop-once" and hits == 1:
             self.close_connection = True
+            return
+        if path.startswith('/redirect/'):
+            destinations = {
+                '/redirect/ok': '/ok',
+                '/redirect/file': 'file:///etc/passwd',
+                '/redirect/data': 'data:text/plain,unsafe',
+                '/redirect/ftp': 'ftp://example.invalid/private',
+                '/redirect/http': 'http://example.invalid/downgrade',
+                '/redirect/loop': '/redirect/loop',
+            }
+            self.send_response(302)
+            self.send_header('Location', destinations[path])
+            self.send_header('Content-Length', '0')
+            self.end_headers()
             return
         if path == "/hang":
             threading.Event().wait(0.5)
@@ -318,3 +333,39 @@ def test_the_shipped_readme_uses_only_forms_the_checker_verifies() -> None:
     assert unsupported == []
     assert references
     assert all(r.url.startswith("https://") or r.url.startswith(("mailto:", "#")) for r in references)
+
+
+@pytest.mark.parametrize('scheme', ['file:///etc/passwd', 'data:text/plain,unsafe', 'ftp://example.invalid/a'])
+def test_fetch_itself_rejects_non_web_schemes(scheme: str) -> None:
+    with pytest.raises(ValueError, match='request target'):
+        checker._fetch(scheme)
+
+
+def test_same_scheme_redirect_still_resolves(server: str) -> None:
+    assert checker.check_reference(Reference(server + '/redirect/ok', is_image=False)) is None
+    assert _Handler.requested[-1] == '/ok'
+
+
+@pytest.mark.parametrize('target', ['file', 'data', 'ftp'])
+def test_redirect_cannot_open_a_non_web_scheme(server: str, target: str) -> None:
+    result = checker.check_reference(Reference(server + '/redirect/' + target, is_image=False))
+    assert result is not None
+    assert '/ok' not in _Handler.requested
+
+
+def test_redirect_cannot_downgrade_https(monkeypatch: pytest.MonkeyPatch) -> None:
+    import io
+    import http.client
+    import urllib.request
+    # Invoke the actual handler before a network connection is made.
+    handler = _module._WebRedirectHandler()
+    with pytest.raises(ValueError, match='redirect target'):
+        handler.redirect_request(urllib.request.Request('https://example.invalid/start'),
+                                 io.BytesIO(), 302, 'Found', http.client.HTTPMessage(),
+                                 'http://example.invalid/downgrade')
+
+
+def test_redirect_loop_is_bounded(server: str) -> None:
+    result = checker.check_reference(Reference(server + '/redirect/loop', is_image=False))
+    assert result is not None
+    assert len(_Handler.requested) <= 20

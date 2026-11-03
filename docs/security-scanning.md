@@ -66,24 +66,29 @@ This profile repository has no CFN or CDK. cfn-lint, cdk-nag and Checkov on
 proposal cooldown. Socket Free installation and required-check settings remain
 human/account acceptance steps; neither is inferred from this configuration.
 
-## Initial findings
+## Remediation and compatibility
 
-The first actual scan blocked on existing source and lockfile findings. These
-remain visible and are not accepted risks or suppressed rules. Keep the rollout
-PR as a draft until they have reviewed dispositions or fixes.
+The initial scan found two Semgrep audit matches and five advisories across
+three development dependencies. The shipping candidate fixes those findings
+without suppressions or accepted vulnerabilities.
 
-Semgrep flags the missing npm release-age policy and the README link checker's
-dynamic `urllib.request.urlopen` call. The latter needs a review of its existing
-HTTPS validation and redirect behavior before deciding whether to change code
-or approve a narrow audit disposition.
+The npm policy sets `min-release-age=7`. `.mise.toml` and `.nvmrc` pin Node
+24.22.2, which includes npm 11.19.1 and supports that policy. Lockfile installs
+remain reproducible; the age policy applies when resolving new package versions.
 
-OSV reports five advisories across three development dependencies:
+The README checker now uses an explicit HTTP(S) opener with no file, data or FTP
+handler. It validates the initial URL and every redirect, keeping HTTPS-only
+production requests and normal certificate verification. Loopback tests enable
+HTTP explicitly. Tests cover non-web targets, same-scheme redirects, HTTPS
+downgrade prevention and bounded redirect loops.
 
-- `katex@0.16.47`: GHSA-238p-pmpm-9mq7, fixed in 0.18.2.
-- `markdown-it@15.0.1`: GHSA-gfr2-rv44-r23c, GHSA-r7fv-28h4-cvq7 and
-  GHSA-vfgh-jcmw-g37q, all fixed by 15.0.3.
-- `smol-toml@1.8.0`: GHSA-r4xh-jqrq-34v2, fixed in 1.9.0.
-
-KaTeX's fixed version crosses its existing parent's declared range. This scanning
-PR does not force that upgrade, change npm policy or inherit another repository's
-risk acceptance. Dependency remediations need their own compatibility evidence.
+Markdownlint CLI 0.24.0 supplies patched `markdown-it@15.0.3` and
+`smol-toml@1.9.1`. A scoped `markdownlint` override updates its pinned
+`re2js` from 2.8.6 to the patched 2.8.7 for GHSA-gg6h-894w-4m9c. Its math extension still declares KaTeX `^0.16.0`, whose latest
+release is affected by GHSA-238p-pmpm-9mq7. A scoped override selects
+`micromark-extension-math`'s KaTeX 0.18.2, outside that declared range.
+`npm run test:math`, included in the complete gate, verifies the actual parent's
+resolved KaTeX version, inline and block rendering, malformed input, untrusted
+commands, bounded macro expansion and Markdownlint's handling of math tokens.
+The override changes development tooling only. Remove it when the parent
+supports a patched release directly.

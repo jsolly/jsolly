@@ -4,7 +4,8 @@ This repository owns its gate, setup, CI and deployment scripts. A separate
 configuration repository, private package or global skill installation is not
 required. Templates used during migration are examples, not an enforced upstream.
 
-Prerequisites: Git, Bash >= 5 and Python >= 3.11. Install mise on non-Linux hosts;
+Prerequisites: Git, Bash >= 5 and Python >= 3.11. The repository pins Node
+24.22.2 with npm 11.19.1 to enforce its seven-day npm release-age policy. Install mise on non-Linux hosts;
 fresh Linux setup provisions a pinned, checksum-verified public mise binary in
 `/usr/local/bin`, using noninteractive sudo only when needed. The repository's `.mise.toml`
 and `.nvmrc` own its tool pins. On a reviewed fresh `origin/main` checkout run:

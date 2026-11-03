@@ -17,7 +17,7 @@ import urllib.request
 from dataclasses import dataclass
 from html.parser import HTMLParser
 from pathlib import Path
-from typing import cast
+from typing import IO, cast
 
 ATTEMPTS = 3
 TIMEOUT_SECONDS = 20
@@ -112,11 +112,33 @@ def _printable(text: str) -> str:
     return " ".join("".join(c if c.isprintable() else " " for c in text).split())
 
 
+class _WebRedirectHandler(urllib.request.HTTPRedirectHandler):
+    def redirect_request(
+        self, req: urllib.request.Request, fp: IO[bytes], code: int,
+        msg: str, headers: http.client.HTTPMessage, newurl: str,
+    ) -> urllib.request.Request | None:
+        if not newurl.lower().startswith(REMOTE_SCHEMES):
+            raise ValueError("redirect target is not an https URL")
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
 def _fetch(url: str) -> tuple[int, str]:
+    if not url.lower().startswith(REMOTE_SCHEMES):
+        raise ValueError("request target is not an https URL")
+    # Avoid the default opener's file, data and FTP handlers. Keep normal TLS
+    # verification and proxy support, and validate every redirect before opening it.
+    opener = urllib.request.OpenerDirector()
+    for handler in (
+        urllib.request.ProxyHandler(), urllib.request.UnknownHandler(),
+        urllib.request.HTTPHandler(), urllib.request.HTTPSHandler(),
+        urllib.request.HTTPDefaultErrorHandler(), _WebRedirectHandler(),
+        urllib.request.HTTPErrorProcessor(),
+    ):
+        opener.add_handler(handler)
     request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     try:
-        # urlopen's stub returns Any; HTTP(S) requests return HTTPResponse.
-        with cast(http.client.HTTPResponse, urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS)) as response:
+        # The opener's stub returns Any; the allowed HTTP(S) handlers return HTTPResponse.
+        with cast(http.client.HTTPResponse, opener.open(request, timeout=TIMEOUT_SECONDS)) as response:
             response.read(1)
             return response.status, response.headers.get("Content-Type", "")
     except urllib.error.HTTPError as error:
