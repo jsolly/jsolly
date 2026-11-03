@@ -1,6 +1,41 @@
 #!/usr/bin/env bash
 ((BASH_VERSINFO[0] >= 5)) || { echo "✗ $0 requires Bash >= 5, not $BASH_VERSION. Fix: brew install bash; open a fresh shell and rerun repository setup." >&2; exit 1; }
 set -euo pipefail
-# Installed outside the working tree. Only this pre-commit entry is registered.
+# Installed outside the working tree for both pre-commit and pre-push.
 base="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
-exec bash "$base/scripts/repo-python.sh" "$base/scripts/repo-hooks.py" dispatch
+hook="$(basename "${BASH_SOURCE[0]}")"
+if [[ $hook == pre-push ]]; then
+  # Gitleaks only: the commits each pushed ref sends that the destination already lacks, judged by
+  # the advertised old commit, when present locally. Tracking refs may be stale.
+  # A new ref scans its whole history. Semgrep and OSV remain in CI.
+  # Keep these log options aligned with ci.yml.
+  # Validate the complete installed bundle and this repository before sourcing
+  # its library. Verification leaves the native pre-push stdin untouched.
+  bash "$base/scripts/repo-python.sh" "$base/scripts/repo-hooks.py" verify-pre-push --snapshot "$base" --root "$PWD" >/dev/null
+  source "$base/gate/gate-lib.sh"
+  export GIT_NO_REPLACE_OBJECTS=1 # scan the objects the push sends, not local replacements
+  while true; do
+    if ! read -r local_ref sha remote_ref remote_sha extra; then
+      [[ -z ${local_ref:-}${sha:-}${remote_ref:-}${remote_sha:-}${extra:-} ]] ||
+        { echo "Malformed pre-push input: unterminated record" >&2; exit 1; }
+      break
+    fi
+    [[ -n $local_ref && -n $remote_ref && -z $extra && $sha =~ ^([0-9a-f]{40}|[0-9a-f]{64})$ && $remote_sha =~ ^([0-9a-f]{40}|[0-9a-f]{64})$ ]] ||
+      { echo "Malformed pre-push input" >&2; exit 1; }
+    [[ $sha =~ ^0+$ ]] && continue # deleting a remote ref sends nothing
+    git rev-parse --verify --quiet "$sha^{commit}" >/dev/null ||
+      { echo "✗ pre-push scans commits; $sha is not one" >&2; exit 1; }
+    held=()
+    if git rev-parse --verify --quiet "$remote_sha^{commit}" >/dev/null; then held+=("$remote_sha"); fi
+    opts="--text --diff-merges=remerge --no-color --no-textconv $sha"
+    ((${#held[@]} == 0)) || opts+=" --not ${held[*]}"
+    # Gitleaks cannot inspect the combined diff of an octopus merge.
+    exclusions=()
+    ((${#held[@]} == 0)) || exclusions=(--not "${held[@]}")
+    merges="$(git rev-list --min-parents=3 "$sha" "${exclusions[@]}")"
+    [[ -z $merges ]] || { echo "Cannot scan an octopus merge" >&2; exit 1; }
+    gate_gitleaks_scan git --no-banner --no-color --redact --log-opts="$opts"
+  done
+  exit 0
+fi
+exec bash "$base/scripts/repo-python.sh" "$base/scripts/repo-hooks.py" dispatch --hook "$hook"

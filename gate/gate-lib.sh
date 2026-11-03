@@ -136,6 +136,22 @@ gate_gitleaks_bin() {
   return 1
 }
 
+# Use only pinned built-in rules. Branch config, ignore files and inline allow
+# comments cannot suppress the repository's required secret checks.
+gate_gitleaks_scan() (
+  local config scratch gl
+  if [[ -e .gitleaksignore || -L .gitleaksignore ]]; then
+    echo 'Repository .gitleaksignore is unsupported by required secret checks' >&2
+    exit 1
+  fi
+  gl="$(gate_gitleaks_bin)" || exit 1
+  scratch="$(mktemp -d)" || exit 1
+  config="$scratch/default.toml"
+  trap 'rm -rf "$scratch"' EXIT
+  printf '[extend]\nuseDefault = true\n' > "$config"
+  "$gl" "$@" --config "$config" --gitleaks-ignore-path /dev/null --ignore-gitleaks-allow
+)
+
 # Staged secrets scan: gitleaks over the index (what the commit will capture), not a
 # ref range. `--pre-commit --staged` is gitleaks' documented pre-commit mode ("scan
 # staged commits"). Fail-loud if the pinned gitleaks is absent.
@@ -161,7 +177,7 @@ gate_secrets_scan_staged() {
       "$unread" "$(git rev-parse --git-path info/attributes)" "$(git --version)" >&2
     exit 1
   fi
-  GIT_ATTR_SOURCE="$tree" "$gl" git --no-banner --no-color --redact --verbose --pre-commit --staged
+  GIT_ATTR_SOURCE="$tree" gate_gitleaks_scan git --no-banner --no-color --redact --verbose --pre-commit --staged
 }
 
 # Markdown lint when any path on stdin (added/changed, one per line) is authored
@@ -396,9 +412,11 @@ gate_require_node() {
   local nvmrc="${ROOT:-.}/.nvmrc" want have
   command -v node >/dev/null 2>&1 || {
     echo "✗ node not on PATH — the gate runs node/npm; install Node and 'nvm use' before committing" >&2; return 1; }
-  [ -f "$nvmrc" ] || { echo "✗ no .nvmrc at $nvmrc — cannot assert the pinned Node major" >&2; return 1; }
-  want="$(tr -cd '0-9.' < "$nvmrc")"; want="${want%%.*}"
-  have="$(node -v | tr -cd '0-9.')"; have="${have%%.*}"
+  [ -f "$nvmrc" ] || { echo "✗ no .nvmrc at $nvmrc — cannot assert the pinned Node version" >&2; return 1; }
+  want="$(tr -cd '0-9.' < "$nvmrc")"
+  have="$(node -v | tr -cd '0-9.')"
+  # A full numeric pin asserts the actual release; a major-only pin retains its scope.
+  [[ "$want" == *.* ]] || have="${have%%.*}"
   if [ -z "$want" ]; then
     # A non-numeric .nvmrc (e.g. `lts/iron`, `node`) carries no major to assert — degrade to the
     # node-present check above rather than print a bogus "matches v" line against an empty version.
@@ -406,7 +424,7 @@ gate_require_node() {
     return 0
   fi
   if [ "$have" != "$want" ]; then
-    echo "✗ Node major mismatch: running v$have but .nvmrc pins v$want — run 'nvm use' (or 'nvm install $want') so the gate runs on the pinned runtime" >&2
+    echo "✗ Node version mismatch: running v$have but .nvmrc pins v$want — run 'nvm use' (or 'nvm install $want') so the gate runs on the pinned runtime" >&2
     return 1
   fi
   echo "• node v$have (matches .nvmrc v$want)"

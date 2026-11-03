@@ -24,7 +24,19 @@ FILES = {
     'scripts/repo-hooks.py': 0o755,
     'scripts/repo-python.sh': 0o755,
     'scripts/setup-agent-environment.sh': 0o755,
+    'gate/security-scan.py': 0o644,
 }
+# Only installed historical snapshots may use the pre-scanner roster.
+PREVIOUS_FILES = {
+    '.git-hooks/pre-commit': 0o755,
+    'gate/gate-lib.sh': 0o644,
+    'gate/hooks/pre-commit': 0o755,
+    'scripts/repo-hooks.py': 0o755,
+    'scripts/repo-python.sh': 0o755,
+    'scripts/setup-agent-environment.sh': 0o755,
+}
+# The scanner is part of the verified bundle.
+SCANNERS = ('gate/security-scan.py',)
 MANIFEST = 'config/agents/repository.json'
 LEGACY_MANIFEST = '.repo-independent.json'
 CONTEXT = {'GIT_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE', 'GIT_COMMON_DIR',
@@ -90,24 +102,25 @@ def unique_pairs(items):
     return result
 
 
-def manifest(data: bytes, slug: str) -> dict:
+def manifest(data: bytes, slug: str, files=None) -> dict:
     value = json.loads(data, object_pairs_hook=unique_pairs)
-    if value != {'version': 1, 'repo': slug, 'files': FILES}:
+    if value != {'version': 1, 'repo': slug, 'files': FILES if files is None else files}:
         raise ValueError('Unknown manifest, repository identity or file allowlist')
     return value
 
 
-def _bundle(root: Path, slug: str, manifest_path: str, ref: str | None = None) -> tuple[str, dict[str, bytes]]:
+def _bundle(root: Path, slug: str, manifest_path: str, ref: str | None = None, files=None) -> tuple[str, dict[str, bytes]]:
     """Read one fixed format; historical reads are limited to installed snapshots/ref proof."""
+    files = FILES if files is None else files
     if ref is None:
         raw = regular(root, manifest_path, 0o644)
-        manifest(raw, slug)
-        payload = {rel: regular(root, rel, mode) for rel, mode in FILES.items()}
+        manifest(raw, slug, files)
+        payload = {rel: regular(root, rel, mode) for rel, mode in files.items()}
     else:
         raw = git(root, 'show', f'{ref}:{manifest_path}', binary=True)
-        manifest(raw, slug)
+        manifest(raw, slug, files)
         payload = {}
-        for rel, mode in FILES.items():
+        for rel, mode in files.items():
             tree = str(git(root, 'ls-tree', ref, '--', rel))
             if not tree.startswith(f'{0o100000 | mode:o} blob '):
                 raise ValueError('Reviewed bundle file missing or has wrong mode: ' + rel)
@@ -116,7 +129,7 @@ def _bundle(root: Path, slug: str, manifest_path: str, ref: str | None = None) -
         if not tree.startswith('100644 blob '):
             raise ValueError('Reviewed manifest missing or has wrong mode')
     payload[manifest_path] = raw
-    rows = [{'path': rel, 'mode': FILES.get(rel, 0o644),
+    rows = [{'path': rel, 'mode': files.get(rel, 0o644),
              'sha256': hashlib.sha256(data).hexdigest()} for rel, data in sorted(payload.items())]
     digest = hashlib.sha256(json.dumps({'repo': slug, 'files': rows},
                                       sort_keys=True, separators=(',', ':')).encode()).hexdigest()
@@ -193,8 +206,9 @@ def snapshot(parent: Path, digest: str, payload: dict[str, bytes], slug: str) ->
         (staging / 'installation.json').write_text(json.dumps({'version': 2, 'manifest': MANIFEST, 'repo': slug, 'digest': digest}))
         (staging / 'installation.json').chmod(0o600)
         (staging / 'hooks').mkdir(mode=0o700)
-        (staging / 'hooks/pre-commit').write_bytes(payload['gate/hooks/pre-commit'])
-        (staging / 'hooks/pre-commit').chmod(0o755)
+        for name in ('pre-commit', 'pre-push', 'cursor'):
+            (staging / 'hooks' / name).write_bytes(payload['gate/hooks/pre-commit'])
+            (staging / 'hooks' / name).chmod(0o755)
         # Rename publishes all bytes at once. Old configured versions remain usable.
         staging.rename(dest)
     finally:
@@ -220,7 +234,11 @@ def snapshot_bundle(version: Path, slug: str, *, allow_legacy: bool = False) -> 
             raise ValueError('Snapshot contains a retired manifest')
     else:
         raise ValueError('Installed hook identity/format mismatch')
-    if _bundle(version, slug, manifest_path)[0] != digest:
+    recorded = json.loads(regular(version, manifest_path, 0o644))
+    files = recorded.get('files')
+    if files not in (FILES, PREVIOUS_FILES):
+        raise ValueError('Unknown installed snapshot file allowlist')
+    if _bundle(version, slug, manifest_path, files=files)[0] != digest:
         raise ValueError('Installed hook snapshot is corrupt')
     return digest, manifest_path
 
@@ -243,11 +261,15 @@ def verify_dispatcher(version: Path):
     hookdir = version / 'hooks'
     if hookdir.is_symlink() or not hookdir.is_dir():
         raise ValueError('Unsafe installed dispatcher directory')
-    dispatcher = regular(version, 'hooks/pre-commit', 0o755)
-    if stat.S_IMODE((hookdir / 'pre-commit').stat().st_mode) != 0o755 or dispatcher != regular(version, 'gate/hooks/pre-commit', 0o755):
-        raise ValueError('Installed dispatcher differs from its verified snapshot')
+    recorded = json.loads(regular(version, MANIFEST if (version / MANIFEST).exists() else LEGACY_MANIFEST, 0o644))
+    # Scanner presence identifies the format that registers pre-push.
+    expected = {'pre-commit', 'pre-push', 'cursor'} if any(s in recorded['files'] for s in SCANNERS) else {'pre-commit'}
+    for name in expected:
+        dispatcher = regular(version, 'hooks/' + name, 0o755)
+        if stat.S_IMODE((hookdir / name).stat().st_mode) != 0o755 or dispatcher != regular(version, 'gate/hooks/pre-commit', 0o755):
+            raise ValueError('Installed dispatcher differs from its verified snapshot')
     for path in hookdir.iterdir():
-        if path.name != 'pre-commit' or path.is_symlink() or not path.is_file():
+        if path.name not in expected or path.is_symlink() or not path.is_file():
             raise ValueError('Unexpected hook in installed dispatcher directory')
 
 
@@ -265,7 +287,7 @@ def approve_upgrade(root: Path, common: Path, slug: str, digest: str):
             ref = str(git(root, 'show-ref', '--verify', '--hash', 'refs/remotes/origin/main'))
             if git(root, 'ls-tree', ref, '--', MANIFEST):
                 raise ValueError('Protected source no longer has the historical format')
-            authorized = _bundle(root, slug, LEGACY_MANIFEST, ref)[0] == old_digest
+            authorized = _bundle(root, slug, LEGACY_MANIFEST, ref, files=PREVIOUS_FILES)[0] == old_digest
         except (ValueError, OSError):
             pass
     if not authorized:
@@ -302,10 +324,14 @@ def install(root: Path, common: Path, slug: str, digest: str, payload: dict[str,
     print('Repository-owned hooks installed: ' + str(hooks))
 
 
-def dispatch(root: Path, common: Path, slug: str, digest: str, payload: dict[str, bytes]):
+def dispatch(root: Path, common: Path, slug: str, digest: str, payload: dict[str, bytes], hook='pre-commit'):
     installed = verify_installed(common, slug)
     for rel in ['scripts/repo-hooks.py', 'scripts/repo-python.sh', 'gate/hooks/pre-commit']:
-        if (installed / rel).read_bytes() != payload[rel]:
+        try:
+            unchanged = (installed / rel).read_bytes() == payload[rel]
+        except FileNotFoundError:
+            unchanged = False
+        if not unchanged:
             raise ValueError('Trust implementation changed; run reviewed repository setup before dispatch')
     # Do not let a worktree override select another dispatcher.
     effective = str(git(root, 'config', '--type=path', '--get', 'core.hooksPath'))
@@ -329,6 +355,9 @@ def dispatch(root: Path, common: Path, slug: str, digest: str, payload: dict[str
         if index.parent != gitdir or not (index.name in {'index', 'index.lock'} or re.fullmatch(r'next-index-[0-9]+\.lock', index.name)):
             raise ValueError('Committing index is outside this worktree Git directory')
         env['GIT_INDEX_FILE'] = str(index)
+    scanner = [sys.executable, '-I', str(snap / 'gate/security-scan.py')]
+    if hook == 'cursor':
+        os.execve(sys.executable, [*scanner, 'cursor', '--root', str(root)], env)
     # Snapshot shim sources snapshot library; quality scripts run in the committing root.
     os.chdir(root)
     os.execve(str(snap / '.git-hooks/pre-commit'), [str(snap / '.git-hooks/pre-commit')], env)
@@ -336,9 +365,11 @@ def dispatch(root: Path, common: Path, slug: str, digest: str, payload: dict[str
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=['install', 'dispatch', 'verify', 'digest', 'approve', 'approve-upgrade'])
+    parser.add_argument('command', choices=['install', 'dispatch', 'verify', 'digest', 'approve', 'approve-upgrade', 'verify-pre-push'])
     parser.add_argument('--root', type=Path, default=Path.cwd())
     parser.add_argument('--digest')
+    parser.add_argument('--snapshot', type=Path)
+    parser.add_argument('--hook', choices=['pre-commit', 'cursor'], default='pre-commit')
     args = parser.parse_args()
     if sys.version_info < (3, 11):
         raise ValueError('Python >= 3.11 is required before installing repository hooks')
@@ -359,21 +390,27 @@ def main() -> int:
                 print('Approved exact repository bundle: ' + digest)
         elif args.command == 'install':
             install(root, common, slug, digest, payload)
-        elif args.command == 'verify':
+        elif args.command in ('verify', 'verify-pre-push'):
             installed = verify_installed(common, slug)
+            if args.command == 'verify-pre-push':
+                effective = Path(str(git(root, 'config', '--type=path', '--get', 'core.hooksPath')))
+                running_helper = Path(__file__).resolve()
+                if (args.snapshot != installed or effective != installed / 'hooks'
+                        or running_helper != installed / 'scripts/repo-hooks.py'):
+                    raise ValueError('Executing pre-push snapshot or worktree hooksPath is stale; run reviewed repository setup')
             if installed.name != digest:
                 raise ValueError('Installed bundle is stale; run reviewed repository setup')
             if not trusted(root, slug, digest):
                 raise ValueError('Current source bundle is not trusted')
             print('Repository-owned hooks verified')
         else:
-            dispatch(root, common, slug, digest, payload)
+            dispatch(root, common, slug, digest, payload, args.hook)
     return 0
 
 
 if __name__ == '__main__':
     try:
         raise SystemExit(main())
-    except (ValueError, OSError, json.JSONDecodeError) as error:
+    except (ValueError, OSError, json.JSONDecodeError, subprocess.CalledProcessError) as error:
         print('repo-hooks: ' + str(error), file=sys.stderr)
         raise SystemExit(1)

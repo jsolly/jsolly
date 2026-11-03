@@ -1,5 +1,6 @@
 
 [tools]
-node = "24"
+node = "24.22.2"
 gitleaks = "8.24.2"
 uv = "0.12.22"
+osv-scanner = "2.7.0"

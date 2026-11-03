@@ -4,7 +4,8 @@ This repository owns its gate, setup, CI and deployment scripts. A separate
 configuration repository, private package or global skill installation is not
 required. Templates used during migration are examples, not an enforced upstream.
 
-Prerequisites: Git, Bash >= 5 and Python >= 3.11. Install mise on non-Linux hosts;
+Prerequisites: Git, Bash >= 5 and Python >= 3.11. The repository pins Node
+24.22.2 with npm 11.19.1 to enforce its seven-day npm release-age policy. Install mise on non-Linux hosts;
 fresh Linux setup provisions a pinned, checksum-verified public mise binary in
 `/usr/local/bin`, using noninteractive sudo only when needed. The repository's `.mise.toml`
 and `.nvmrc` own its tool pins. On a reviewed fresh `origin/main` checkout run:
@@ -28,7 +29,7 @@ that the gate ran. No setup command deploys the application or infrastructure.
 ## Hook trust
 
 The dispatcher lives in this clone's Git common directory, shared only by its
-linked worktrees. It registers pre-commit only. The complete hook/library/setup
+linked worktrees. It registers pre-commit and pre-push. The complete hook/library/setup
 bundle must match current reviewed `origin/main`, or a deliberately approved exact
 bundle digest. Missing files, symlinks, unreviewed modes and a foreign origin fail
 closed. The dispatcher executes a verified snapshot, then runs quality scripts in
@@ -46,6 +47,20 @@ values, to approve only those bytes; never approve a fork's bundle. Approvals ar
 repo-local. Revoke explicit approvals with `git config --local --unset-all
 repo.trustedGateBundle`; current reviewed main remains trusted. Changing origin
 invalidates the bundle identity. No environment variable selects another library.
+
+For the first scanner-roster transition, an installed pre-scanner helper cannot
+parse the new roster. After independently reviewing the complete candidate
+bundle, use that reviewed candidate's helper for `digest` and `approve`, then
+`install` and `verify`. The candidate helper authenticates the old installed
+snapshot before granting an exact-digest approval. Do not use this procedure
+for arbitrary branch code or an unreviewed helper.
+
+```bash
+digest="$(bash scripts/repo-python.sh scripts/repo-hooks.py digest)" &&
+  bash scripts/repo-python.sh scripts/repo-hooks.py approve --digest "$digest" &&
+  bash scripts/repo-python.sh scripts/repo-hooks.py install &&
+  bash scripts/repo-python.sh scripts/repo-hooks.py verify
+```
 
 The authoritative identity manifest is `config/agents/repository.json`. Current
 checkouts refuse a retired root `.repo-independent.json`, including dangling links.
@@ -99,6 +114,9 @@ broaden grants or run destructive infrastructure/database operations.
 Repository instructions and access rules are maintained here. Personal home
 configuration and optional global skills remain separate and are not installed,
 removed or overwritten by repo setup.
+
+See [repository security checks](security-scanning.md) for local scanning, the
+Cursor gate, CI coverage and remaining human installation steps.
 
 ## Python tests
 

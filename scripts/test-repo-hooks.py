@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import shlex
 import stat
 import subprocess
 import sys
@@ -13,7 +14,7 @@ import unittest
 from unittest.mock import patch
 
 SOURCE = Path(__file__).resolve().parent.parent
-BUNDLE = ('config/agents/repository.json', 'gate/gate-lib.sh', 'gate/hooks/pre-commit',
+BUNDLE = ('gate/security-scan.py', 'config/agents/repository.json', 'gate/gate-lib.sh', 'gate/hooks/pre-commit',
           'scripts/repo-hooks.py', 'scripts/repo-python.sh', 'scripts/setup-agent-environment.sh')
 
 
@@ -37,6 +38,7 @@ class HookTrust(unittest.TestCase):
             target = self.root / name
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(SOURCE / name, target)
+        (self.root / 'gate/security-scan.py').write_text('# fixture scanner\n')
         slug = json.loads((self.root / 'config/agents/repository.json').read_text())['repo']
         self.git('remote', 'add', 'origin', 'https://github.com/' + slug + '.git')
         (self.root / '.git-hooks').mkdir()
@@ -82,6 +84,17 @@ fi
     def dispatch(self, root=None):
         return subprocess.run([str(self.hooks / 'pre-commit')], cwd=root or self.root,
                               env=self.env, text=True, capture_output=True)
+
+    def test_cursor_registration_reaches_installed_dispatcher_before_worktree_helpers(self):
+        registration = json.loads((SOURCE / '.cursor/hooks.json').read_text())
+        command = registration['hooks']['beforeShellExecution'][0]['command']
+        marker = self.scratch / 'untrusted-cursor-helper'
+        (self.root / 'scripts/repo-python.sh').write_text(
+            '#!/usr/bin/env bash\ntouch "' + str(marker) + '"\necho bypassed\n')
+        result = subprocess.run(shlex.split(command), cwd=self.root, env=self.env,
+                                input='{"command":"git push"}', text=True, capture_output=True)
+        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertFalse(marker.exists())
 
     def test_fresh_home_and_linked_worktree_run_the_committing_tree(self):
         self.assertFalse((self.home / 'code/dotagents').exists())
@@ -145,7 +158,11 @@ fi
         candidate = (self.root / 'scripts/repo-hooks.py').read_bytes()
         marker = self.root / 'config/agents/repository.json'
         legacy = self.root / '.repo-independent.json'
-        marker.rename(legacy)
+        original_manifest = marker.read_bytes()
+        old_manifest = json.loads(original_manifest)
+        del old_manifest['files']['gate/security-scan.py']
+        legacy.write_text(json.dumps(old_manifest))
+        marker.unlink()
         (self.root / 'scripts/repo-hooks.py').write_bytes((SOURCE / 'scripts/fixtures/repo-hooks-legacy.py').read_bytes())
         self.git('add', '-A')
         self.git('-c', 'core.hooksPath=/dev/null', 'commit', '-qm', 'reviewed old format')
@@ -153,7 +170,8 @@ fi
         self.tool('install', check=True)
         self.hooks = Path(self.git('config', '--get', 'core.hooksPath').stdout.strip())
         self.installed = self.hooks.parent / 'scripts/repo-hooks.py'
-        legacy.rename(marker)
+        legacy.unlink()
+        marker.write_bytes(original_manifest)
         (self.root / 'scripts/repo-hooks.py').write_bytes(candidate)
         return self.tool('digest', check=True).stdout.strip()
 
