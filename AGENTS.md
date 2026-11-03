@@ -63,7 +63,9 @@ Dependabot PR events allocate no validation runners until an explicitly
 authorized maintenance run applies the `ow-ci` label. Only the `labeled` event
 that adds `ow-ci` runs the real `ci` check. A later Dependabot push defers again
 until a drain re-kicks the new head (remove, then re-add `ow-ci`). Deferred runs
-report `ci-deferred` and cannot satisfy the required `ci` check. Skipped or
+report `ci-deferred` and cannot satisfy the required `ci` check. The Security
+workflow follows the same authorization predicate and reports `security-deferred`
+for deferred events. Skipped or
 absent checks never authorize a dependency merge. See the Dependabot CI kick in
 the repository CI workflow and local release instructions.
 

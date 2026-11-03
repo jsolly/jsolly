@@ -16,22 +16,57 @@ scan = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(scan)
 
 
+@pytest.fixture(autouse=True)
+def isolated_git_environment(monkeypatch):
+    # Git's hook environment can select the *real committing index*. Clear it
+    # for the entire fixture, including imported scanner calls and CLI children.
+    for key in list(os.environ):
+        if key.startswith('GIT_'):
+            monkeypatch.delenv(key)
+    for key, value in {
+        'GIT_CONFIG_NOSYSTEM': '1', 'GIT_CONFIG_GLOBAL': '/dev/null',
+        'GIT_AUTHOR_NAME': 'Fixture', 'GIT_AUTHOR_EMAIL': 'fixture@example.invalid',
+        'GIT_COMMITTER_NAME': 'Fixture', 'GIT_COMMITTER_EMAIL': 'fixture@example.invalid',
+    }.items():
+        monkeypatch.setenv(key, value)
+
+
 def git(root, *args):
-    return subprocess.check_output(['git', '-C', str(root), *args], text=True).strip()
+    root = root.resolve()
+    if args[0] != 'init':
+        common = Path(subprocess.check_output(
+            ['git', '-C', str(root), 'rev-parse', '--path-format=absolute', '--git-common-dir'],
+            text=True).strip()).resolve()
+        assert common.is_relative_to(root), 'Fixture escaped its Git directory'
+    # These are isolated fixture commits, including deliberate hook bypasses.
+    # The installed native pre-push path is invoked separately below.
+    return subprocess.check_output(
+        ['git', '-c', 'core.hooksPath=/dev/null', '-C', str(root), *args], text=True).strip()
 
 
 @pytest.fixture
 def repo(tmp_path):
     root = tmp_path / 'repo'
     root.mkdir()
+    manifest = json.loads((ROOT / 'config/agents/repository.json').read_text())
+    for name in [*manifest['files'], 'config/agents/repository.json']:
+        target = root / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(ROOT / name, target)
     git(root, 'init', '-q', '-b', 'main')
-    git(root, 'config', 'user.name', 'Fixture')
-    git(root, 'config', 'user.email', 'fixture@example.invalid')
-    git(root, 'config', 'core.hooksPath', '/dev/null')
+    git(root, 'remote', 'add', 'origin', 'https://github.com/' + manifest['repo'] + '.git')
     (root / 'safe.txt').write_text('safe baseline\n')
     git(root, 'add', '.')
     git(root, 'commit', '-qm', 'baseline')
+    git(root, 'update-ref', 'refs/remotes/origin/main', 'HEAD')
+    tool(root, 'install')
     return root
+
+
+def tool(root, *args):
+    return subprocess.check_output(
+        [sys.executable, '-I', str(root / 'scripts/repo-hooks.py'), *args, '--root', str(root)],
+        cwd=root, text=True).strip()
 
 
 def secret():
@@ -47,12 +82,9 @@ def commit_secret(root):
 
 
 def prepush(root, tmp_path, lines):
-    snapshot = tmp_path / 'snapshot'
-    (snapshot / 'hooks').mkdir(parents=True, exist_ok=True)
-    (snapshot / 'gate').mkdir(exist_ok=True)
-    shutil.copy2(ROOT / 'gate/hooks/pre-commit', snapshot / 'hooks/pre-push')
-    shutil.copy2(ROOT / 'gate/gate-lib.sh', snapshot / 'gate/gate-lib.sh')
-    return subprocess.run(['bash', str(snapshot / 'hooks/pre-push'), 'origin'],
+    # Invoke the real installed entry, not a copied shell hook without its trust chain.
+    hooks = Path(git(root, 'config', '--local', '--get', 'core.hooksPath'))
+    return subprocess.run(['bash', str(hooks / 'pre-push'), 'origin'],
                           cwd=root, input=lines, text=True, capture_output=True)
 
 
@@ -87,7 +119,7 @@ def test_pre_push_limits_scan_to_outgoing_history(repo, tmp_path):
     assert result.returncode == 0, result.stderr
 
 
-@pytest.mark.parametrize('line', ['malformed\n', 'ref bad ref bad\n'])
+@pytest.mark.parametrize('line', ['malformed\n', 'ref bad ref bad\n', 'malformed'])
 def test_pre_push_refuses_malformed_input(repo, tmp_path, line):
     result = prepush(repo, tmp_path, line)
     assert result.returncode != 0
@@ -160,7 +192,6 @@ def test_source_scanner_findings_block_ci(repo, monkeypatch):
 
 def test_stale_tracking_ref_cannot_exclude_a_new_branch_secret(repo, tmp_path):
     head = commit_secret(repo)
-    git(repo, 'remote', 'add', 'origin', 'https://github.com/example/fixture.git')
     git(repo, 'update-ref', 'refs/remotes/origin/deleted', head)
     result = prepush(repo, tmp_path,
                      f'refs/heads/new {head} refs/heads/new {"0" * 40}\n')
@@ -202,3 +233,49 @@ def test_ci_attempts_dependency_scan_after_source_failure(repo, monkeypatch):
     monkeypatch.setattr(scan, 'dependency_scan', lambda root: calls.append('dependencies'))
     assert scan.main() == 1
     assert calls == ['workflow', 'source', 'dependencies']
+
+
+def test_installed_push_refuses_corrupt_library_before_execution(repo, tmp_path):
+    hooks = Path(git(repo, 'config', '--local', '--get', 'core.hooksPath'))
+    marker = tmp_path / 'unverified-library-executed'
+    library = hooks.parent / 'gate/gate-lib.sh'
+    library.write_text('touch "' + str(marker) + '"\n' + library.read_text())
+    result = prepush(repo, tmp_path, '')
+    assert result.returncode != 0
+    assert not marker.exists()
+    assert 'corrupt' in result.stderr
+
+
+def test_installed_push_refuses_foreign_origin_even_for_deletions(repo, tmp_path):
+    head = git(repo, 'rev-parse', 'HEAD')
+    git(repo, 'remote', 'set-url', 'origin', 'https://github.com/foreign/fixture.git')
+    result = prepush(repo, tmp_path, f'(delete) {"0" * 40} refs/heads/main {head}\n')
+    assert result.returncode != 0
+    assert 'identity' in result.stderr
+
+
+def test_installed_push_refuses_revoked_bundle_authorization(repo, tmp_path):
+    hook = repo / '.git-hooks/pre-commit'
+    hook.write_text(hook.read_text() + '\n# reviewed fixture update\n')
+    digest = tool(repo, 'digest')
+    tool(repo, 'approve', '--digest', digest)
+    tool(repo, 'install')
+    git(repo, 'config', '--local', '--unset-all', 'repo.trustedGateBundle')
+    result = prepush(repo, tmp_path, '')
+    assert result.returncode != 0
+    assert 'not trusted' in result.stderr
+
+
+def test_fixture_execution_cannot_mutate_an_inherited_outer_index(repo, tmp_path):
+    outer_index = repo / '.git/index'
+    before = outer_index.read_bytes()
+    poisoned = dict(os.environ, GIT_INDEX_FILE=str(outer_index), GIT_DIR=str(repo / '.git'),
+                    GIT_WORK_TREE=str(repo))
+    result = subprocess.run(
+        [sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider',
+         '--basetemp', str(tmp_path / 'child-fixtures'),
+         str(Path(__file__).resolve()) + '::test_actual_pre_push_refuses_secret_committed_with_hooks_bypassed',
+         str(Path(__file__).resolve()) + '::test_cursor_scans_staged_and_working_files_independently'],
+        cwd=repo, env=poisoned, text=True, capture_output=True, timeout=60)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert outer_index.read_bytes() == before

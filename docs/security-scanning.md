@@ -13,10 +13,14 @@ which the pinned gitleaks loads even with an explicit ignore-path flag. Only the
 tracking refs may be stale and are never exclusions. New refs scan their complete
 reachable history. Deletions send no commits. Malformed
 input, scanner failure, non-commit targets and outgoing octopus merges fail.
-Git replacement objects cannot hide the actual pushed commits.
+Git replacement objects cannot hide the actual pushed commits. The pre-push
+entry verifies the complete installed snapshot and repository identity before
+sourcing its library.
 
 Semgrep `p/default` and OSV run in `Security / security` on PRs and main,
-including Dependabot PRs. Semgrep findings fail through `--error`; telemetry and
+with Dependabot validation deferred until an authorized `ow-ci` label event,
+matching the existing CI policy. Every later bot update needs a fresh kick.
+Semgrep findings fail through `--error`; telemetry and
 version checks are disabled. The service-managed rules can change independently
 of the pinned CLI. Tests are included, repository ignore files cannot remove
 Semgrep targets, and only generated `node_modules` is explicitly excluded.
@@ -52,7 +56,8 @@ Existing pre-push-free installations stay intact until the new bundle is
 reviewed and installed. The helper accepts their exact historical roster only
 for installed-snapshot verification and upgrade, never as current source trust.
 Use the [exact-digest approval procedure](development.md#hook-trust) when
-developing a reviewed hook change; do not register branch-owned hooks directly.
+developing a reviewed hook change. For this roster transition, use the reviewed
+candidate helper as described there; do not register branch-owned hooks directly.
 
 Run `npm run gate` for the complete local gate and regression tests.
 Run `python3 -I gate/security-scan.py ci` for Semgrep, OSV and zizmor.

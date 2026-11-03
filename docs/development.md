@@ -48,6 +48,20 @@ repo-local. Revoke explicit approvals with `git config --local --unset-all
 repo.trustedGateBundle`; current reviewed main remains trusted. Changing origin
 invalidates the bundle identity. No environment variable selects another library.
 
+For the first scanner-roster transition, an installed pre-scanner helper cannot
+parse the new roster. After independently reviewing the complete candidate
+bundle, use that reviewed candidate's helper for `digest` and `approve`, then
+`install` and `verify`. The candidate helper authenticates the old installed
+snapshot before granting an exact-digest approval. Do not use this procedure
+for arbitrary branch code or an unreviewed helper.
+
+```bash
+digest="$(bash scripts/repo-python.sh scripts/repo-hooks.py digest)" &&
+  bash scripts/repo-python.sh scripts/repo-hooks.py approve --digest "$digest" &&
+  bash scripts/repo-python.sh scripts/repo-hooks.py install &&
+  bash scripts/repo-python.sh scripts/repo-hooks.py verify
+```
+
 The authoritative identity manifest is `config/agents/repository.json`. Current
 checkouts refuse a retired root `.repo-independent.json`, including dangling links.
 An installed snapshot from before this relocation needs the explicit upgrade flow.
