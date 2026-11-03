@@ -83,7 +83,9 @@ def commit_secret(root):
 
 def prepush(root, tmp_path, lines):
     # Invoke the real installed entry, not a copied shell hook without its trust chain.
-    hooks = Path(git(root, 'config', '--local', '--get', 'core.hooksPath'))
+    hooks = Path(subprocess.check_output(
+        ['git', '-C', str(root), 'config', '--type=path', '--get', 'core.hooksPath'],
+        text=True).strip())
     return subprocess.run(['bash', str(hooks / 'pre-push'), 'origin'],
                           cwd=root, input=lines, text=True, capture_output=True)
 
@@ -279,3 +281,25 @@ def test_fixture_execution_cannot_mutate_an_inherited_outer_index(repo, tmp_path
         cwd=repo, env=poisoned, text=True, capture_output=True, timeout=60)
     assert result.returncode == 0, result.stdout + result.stderr
     assert outer_index.read_bytes() == before
+
+
+def test_native_push_rejects_stale_worktree_snapshot_before_sourcing(repo, tmp_path):
+    old_hooks = Path(git(repo, 'config', '--local', '--get', 'core.hooksPath'))
+    hook = repo / '.git-hooks/pre-commit'
+    hook.write_text(hook.read_text() + '\n# independently reviewed second bundle\n')
+    digest = tool(repo, 'digest')
+    tool(repo, 'approve', '--digest', digest)
+    tool(repo, 'install')
+    new_hooks = Path(git(repo, 'config', '--local', '--get', 'core.hooksPath'))
+    assert old_hooks != new_hooks
+    git(repo, 'config', 'extensions.worktreeConfig', 'true')
+    git(repo, 'config', '--worktree', 'core.hooksPath', str(old_hooks))
+    marker = tmp_path / 'stale-library-executed'
+    library = old_hooks.parent / 'gate/gate-lib.sh'
+    library.write_text('touch "' + str(marker) + '"\n' + library.read_text())
+    # Let Git choose the effective entry, including its config.worktree override.
+    result = subprocess.run(['git', '-C', str(repo), 'hook', 'run', 'pre-push', '--', 'origin'],
+                            input='', text=True, capture_output=True)
+    assert result.returncode != 0
+    assert not marker.exists()
+    assert 'snapshot or worktree hooksPath is stale' in result.stderr

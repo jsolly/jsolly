@@ -11,7 +11,7 @@ if [[ $hook == pre-push ]]; then
   # Keep these log options aligned with ci.yml.
   # Validate the complete installed bundle and this repository before sourcing
   # its library. Verification leaves the native pre-push stdin untouched.
-  bash "$base/scripts/repo-python.sh" "$base/scripts/repo-hooks.py" verify --root "$PWD" >/dev/null
+  bash "$base/scripts/repo-python.sh" "$base/scripts/repo-hooks.py" verify-pre-push --snapshot "$base" --root "$PWD" >/dev/null
   source "$base/gate/gate-lib.sh"
   export GIT_NO_REPLACE_OBJECTS=1 # scan the objects the push sends, not local replacements
   while true; do

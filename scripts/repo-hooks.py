@@ -365,9 +365,10 @@ def dispatch(root: Path, common: Path, slug: str, digest: str, payload: dict[str
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=['install', 'dispatch', 'verify', 'digest', 'approve', 'approve-upgrade'])
+    parser.add_argument('command', choices=['install', 'dispatch', 'verify', 'digest', 'approve', 'approve-upgrade', 'verify-pre-push'])
     parser.add_argument('--root', type=Path, default=Path.cwd())
     parser.add_argument('--digest')
+    parser.add_argument('--snapshot', type=Path)
     parser.add_argument('--hook', choices=['pre-commit', 'cursor'], default='pre-commit')
     args = parser.parse_args()
     if sys.version_info < (3, 11):
@@ -389,8 +390,14 @@ def main() -> int:
                 print('Approved exact repository bundle: ' + digest)
         elif args.command == 'install':
             install(root, common, slug, digest, payload)
-        elif args.command == 'verify':
+        elif args.command in ('verify', 'verify-pre-push'):
             installed = verify_installed(common, slug)
+            if args.command == 'verify-pre-push':
+                effective = Path(str(git(root, 'config', '--type=path', '--get', 'core.hooksPath')))
+                running_helper = Path(__file__).resolve()
+                if (args.snapshot != installed or effective != installed / 'hooks'
+                        or running_helper != installed / 'scripts/repo-hooks.py'):
+                    raise ValueError('Executing pre-push snapshot or worktree hooksPath is stale; run reviewed repository setup')
             if installed.name != digest:
                 raise ValueError('Installed bundle is stale; run reviewed repository setup')
             if not trusted(root, slug, digest):
