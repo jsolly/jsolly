@@ -7,6 +7,7 @@
     "gate/hooks/pre-commit": 493,
     "scripts/repo-hooks.py": 493,
     "scripts/repo-python.sh": 493,
-    "scripts/setup-agent-environment.sh": 493
+    "scripts/setup-agent-environment.sh": 493,
+    "gate/security-scan.py": 420
   }
 }

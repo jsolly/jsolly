@@ -136,6 +136,22 @@ gate_gitleaks_bin() {
   return 1
 }
 
+# Use only pinned built-in rules. Branch config, ignore files and inline allow
+# comments cannot suppress the repository's required secret checks.
+gate_gitleaks_scan() (
+  local config scratch gl
+  if [[ -e .gitleaksignore || -L .gitleaksignore ]]; then
+    echo 'Repository .gitleaksignore is unsupported by required secret checks' >&2
+    exit 1
+  fi
+  gl="$(gate_gitleaks_bin)" || exit 1
+  scratch="$(mktemp -d)" || exit 1
+  config="$scratch/default.toml"
+  trap 'rm -rf "$scratch"' EXIT
+  printf '[extend]\nuseDefault = true\n' > "$config"
+  "$gl" "$@" --config "$config" --gitleaks-ignore-path /dev/null --ignore-gitleaks-allow
+)
+
 # Staged secrets scan: gitleaks over the index (what the commit will capture), not a
 # ref range. `--pre-commit --staged` is gitleaks' documented pre-commit mode ("scan
 # staged commits"). Fail-loud if the pinned gitleaks is absent.
@@ -161,7 +177,7 @@ gate_secrets_scan_staged() {
       "$unread" "$(git rev-parse --git-path info/attributes)" "$(git --version)" >&2
     exit 1
   fi
-  GIT_ATTR_SOURCE="$tree" "$gl" git --no-banner --no-color --redact --verbose --pre-commit --staged
+  GIT_ATTR_SOURCE="$tree" gate_gitleaks_scan git --no-banner --no-color --redact --verbose --pre-commit --staged
 }
 
 # Markdown lint when any path on stdin (added/changed, one per line) is authored

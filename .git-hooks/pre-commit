@@ -18,6 +18,7 @@ run_step "bash floor" gate_check_bash_floor   # every Bash entrypoint refuses Ba
 gate_require_node              # enforce the pinned Node (.nvmrc), not whatever's on PATH
 
 # --- Quality gate (run_step: silent on green, full output + abort on red) ---
+run_step "workflow security" python3 -I "$_repo_owned_gate_root/gate/security-scan.py" commit
 run_step "actionlint"    npm run check:actions
 run_step "markdown lint" npm run check:md       # whole tree: the lib lints only when .md is staged
 

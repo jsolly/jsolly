@@ -27,7 +27,7 @@ npm run check:actions               # actionlint + shellcheck
 
 This repo owns `gate/gate-lib.sh` and `scripts/repo-hooks.py`. Run reviewed
 `scripts/setup-agent-environment.sh` on main to install its outside-worktree
-pre-commit dispatcher. Never set hooksPath to `.git-hooks`: a branch could then
+pre-commit and pre-push dispatchers. Never set hooksPath to `.git-hooks`: a branch could then
 register executable hooks. See [development and release](docs/development.md).
 
 ## Local UI verification

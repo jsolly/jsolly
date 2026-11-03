@@ -28,7 +28,7 @@ that the gate ran. No setup command deploys the application or infrastructure.
 ## Hook trust
 
 The dispatcher lives in this clone's Git common directory, shared only by its
-linked worktrees. It registers pre-commit only. The complete hook/library/setup
+linked worktrees. It registers pre-commit and pre-push. The complete hook/library/setup
 bundle must match current reviewed `origin/main`, or a deliberately approved exact
 bundle digest. Missing files, symlinks, unreviewed modes and a foreign origin fail
 closed. The dispatcher executes a verified snapshot, then runs quality scripts in
@@ -99,6 +99,9 @@ broaden grants or run destructive infrastructure/database operations.
 Repository instructions and access rules are maintained here. Personal home
 configuration and optional global skills remain separate and are not installed,
 removed or overwritten by repo setup.
+
+See [repository security checks](security-scanning.md) for local scanning, the
+Cursor gate, CI coverage and remaining human installation steps.
 
 ## Python tests
 
