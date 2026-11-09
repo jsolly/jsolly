@@ -78,7 +78,7 @@ three development dependencies. The shipping candidate fixes those findings
 without suppressions or accepted vulnerabilities.
 
 The npm policy sets `min-release-age=7`. `.mise.toml` and `.nvmrc` pin Node
-24.22.2, which includes npm 11.19.1 and supports that policy. Lockfile installs
+26.13.0, which includes npm 11.20.0 and supports that policy. Lockfile installs
 remain reproducible; the age policy applies when resolving new package versions.
 
 The README checker now uses an explicit HTTP(S) opener with no file, data or FTP
