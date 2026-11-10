@@ -90,7 +90,7 @@ pushing. Create a same-repository PR; use a draft while approval/work remains.
 Merge only when the required CI validates the exact current head. Never push to
 the default branch, weaken rulesets, bypass checks or use an admin merge.
 
-A non-draft pull request from `solly-agent`, `jsolly`, or `cursor[bot]` in this repository arms
+A non-draft pull request from `solly-agent`, `jsolly`, `cursor[bot]`, or `app/cursor` in this repository arms
 native squash auto-merge (`.github/workflows/auto-merge.yml`). GitHub merges it
 with the `solly-agent` `AUTO_MERGE_TOKEN` after the required `ci` and `security`
 checks succeed, so the normal `push` workflows run. Convert the pull request to
