@@ -6,7 +6,7 @@ Ship profile: `gate-only`
 
 **Integration: branch → reviewed PR → merge on green `CI / ci`.** Follow [local release instructions](docs/development.md). Agents never push to `main`, change rulesets, or admin-merge.
 
-A non-draft pull request from `solly-agent` or `jsolly` in this repository arms native squash auto-merge and merges when the required `ci` and `security` checks are green. Convert it to a draft to hold it. `gh pr merge --disable-auto` disarms auto-merge until the next auto-merge run arms it again.
+A non-draft pull request from `solly-agent`, `jsolly`, or `cursor[bot]` in this repository arms native squash auto-merge and merges when the required `ci` and `security` checks are green. Convert it to a draft to hold it. `gh pr merge --disable-auto` disarms auto-merge until the next auto-merge run arms it again.
 
 Local gate before push: `npm run gate` (full working-tree checks, including an empty index).
 
