@@ -119,6 +119,16 @@ def test_pre_push_limits_scan_to_outgoing_history(repo, tmp_path):
     head = git(repo, 'rev-parse', 'HEAD')
     result = prepush(repo, tmp_path, f'refs/heads/main {head} refs/heads/main {held}\n')
     assert result.returncode == 0, result.stderr
+    assert 'semgrep' in result.stderr
+    assert secret() not in result.stdout + result.stderr
+
+
+def test_pre_push_skips_network_scanners_for_an_unchanged_tip(repo, tmp_path):
+    head = git(repo, 'rev-parse', 'HEAD')
+    result = prepush(repo, tmp_path, f'refs/heads/main {head} refs/heads/main {head}\n')
+    assert result.returncode == 0, result.stderr
+    assert 'semgrep' not in result.stderr
+    assert 'osv-scanner' not in result.stderr
 
 
 @pytest.mark.parametrize('line', ['malformed\n', 'ref bad ref bad\n', 'malformed'])
@@ -220,6 +230,51 @@ def test_branch_gitleaks_policies_cannot_suppress_push_or_cursor(repo, tmp_path)
     ignored = prepush(repo, tmp_path, f'refs/heads/main {head} refs/heads/main {baseline}\n')
     assert ignored.returncode != 0
     assert '.gitleaksignore is unsupported' in ignored.stderr
+
+
+def test_push_scans_the_commit_tree_not_the_worktree(repo, monkeypatch):
+    (repo / 'safe.txt').write_text('committed\n')
+    (repo / 'package.json').write_text('{"name":"fixture"}\n')
+    (repo / 'package-lock.json').write_text('{"lock":"committed"}\n')
+    git(repo, 'add', '.')
+    git(repo, 'commit', '-qm', 'committed tree')
+    sha = git(repo, 'rev-parse', 'HEAD')
+    (repo / 'safe.txt').write_text('dirty worktree\n')
+    (repo / 'package-lock.json').write_text('{"lock":"dirty"}\n')
+    seen = {}
+    monkeypatch.setattr(scan, 'source', lambda root: seen.setdefault('source', (root / 'safe.txt').read_text()))
+    monkeypatch.setattr(scan, 'dependency_scan', lambda root: seen.setdefault('deps', (root / 'package-lock.json').read_text()))
+    scan.push_commit(repo, sha)
+    assert seen == {'source': 'committed\n', 'deps': '{"lock":"committed"}\n'}
+
+
+def test_push_requires_a_lockfile_and_does_not_follow_symlinks(repo, tmp_path, monkeypatch):
+    outside = tmp_path / 'outside.txt'
+    outside.write_text('outside-value')
+    (repo / 'package.json').symlink_to(outside)
+    git(repo, 'add', '.')
+    git(repo, 'commit', '-qm', 'linked manifest')
+    sha = git(repo, 'rev-parse', 'HEAD')
+    seen = {}
+
+    def capture(root):
+        manifest = root / 'package.json'
+        assert not manifest.is_symlink()
+        seen['text'] = manifest.read_text()
+
+    def refuse_dependencies(root):
+        raise AssertionError('scanned a dependency manifest')
+
+    monkeypatch.setattr(scan, 'source', capture)
+    monkeypatch.setattr(scan, 'dependency_scan', refuse_dependencies)
+    with pytest.raises(ValueError, match='package-lock.json'):
+        scan.push_commit(repo, sha)
+    assert 'outside-value' not in seen['text']
+
+
+def test_push_cli_requires_a_commit(repo, monkeypatch):
+    monkeypatch.setattr(sys, 'argv', ['security-scan.py', 'push', '--root', str(repo)])
+    assert scan.main() == 1
 
 
 def test_ci_attempts_dependency_scan_after_source_failure(repo, monkeypatch):
