@@ -5,8 +5,9 @@ Zizmor checks workflow security before commits. The installed dispatcher registe
 both pre-commit and pre-push from an outside-worktree, verified snapshot.
 `gate/security-scan.py` is part of that trusted bundle.
 
-Pre-push runs only gitleaks on outgoing commits. It checks every pushed ref,
-including commits created with hooks bypassed. Pinned built-in gitleaks rules
+Pre-push runs gitleaks on outgoing commits, then Semgrep `p/default` and OSV
+on each new tip. It checks every pushed ref, including commits created with
+hooks bypassed. Pinned built-in gitleaks rules
 are explicit; repository config, ignore files and inline allow comments cannot
 suppress findings. Required secret checks refuse a root `.gitleaksignore`,
 which the pinned gitleaks loads even with an explicit ignore-path flag. Only the destination's advertised old commit determines excluded history. Cached
@@ -17,16 +18,22 @@ Git replacement objects cannot hide the actual pushed commits. The pre-push
 entry verifies the complete installed snapshot and repository identity before
 sourcing its library.
 
-Semgrep `p/default` and OSV run in `Security / security` on PRs and main,
+Semgrep and OSV read the new commit tree, not the worktree and not commits the
+remote already advertises. A tip whose advertised remote commit is unchanged
+skips those two network scans. Semgrep findings fail through `--error`;
+telemetry and version checks are disabled. The service-managed rules can change
+independently of the pinned CLI. Tests are included, repository ignore files
+cannot remove Semgrep targets, and only generated `node_modules` is explicitly
+excluded. Parser warnings remain visible and do not establish complete language
+coverage. OSV reads `package-lock.json` with an empty external config and all
+findings enabled. A tip with `package.json` and no regular lockfile fails. A
+tip with neither file is not an npm project. Symlink blobs are scanned as text
+and never followed. Scanner failure, including an unreachable `semgrep.dev` or
+`api.osv.dev`, fails the push. This repository has no inherited risk exceptions.
+
+The same Semgrep and OSV checks run in `Security / security` on PRs and main,
 with Dependabot validation deferred until an authorized `ow-ci` label event,
 matching the existing CI policy. Every later bot update needs a fresh kick.
-Semgrep findings fail through `--error`; telemetry and
-version checks are disabled. The service-managed rules can change independently
-of the pinned CLI. Tests are included, repository ignore files cannot remove
-Semgrep targets, and only generated `node_modules` is explicitly excluded.
-Parser warnings remain visible and do not establish complete language coverage.
-OSV reads `package-lock.json` with an empty external config and all findings
-enabled. This repository has no inherited risk exceptions.
 
 The existing `CI / ci` job still owns the gitleaks history scan, before any
 repository code runs. It is extended with SHA-pinned Actions and disabled
@@ -61,10 +68,13 @@ candidate helper as described there; do not register branch-owned hooks directly
 
 Run `npm run gate` for the complete local gate and regression tests.
 Run `python3 -I gate/security-scan.py ci` for Semgrep, OSV and zizmor.
-Gitleaks history scanning remains in CI, and local outgoing scans run on push.
-Tests exercise real Git history and real gitleaks, including bypassed commits,
-multiple refs, range exclusion, malformed input, staged/worktree divergence and
-Cursor denial. Protocol tests do not prove native Cursor installation.
+Run `python3 -I gate/security-scan.py push --commit <full-sha>` for the
+pre-push Semgrep and OSV pair on one commit. Gitleaks history scanning remains
+in CI, and local outgoing scans run on push.
+Tests exercise real Git history, real gitleaks, and Semgrep on an updated tip,
+including bypassed commits, multiple refs, range exclusion, an unchanged tip,
+malformed input, staged/worktree divergence and Cursor denial. Protocol tests
+do not prove native Cursor installation.
 
 This profile repository has no CFN or CDK. cfn-lint, cdk-nag and Checkov on
 `cdk.out` do not apply. Dependabot covers npm and GitHub Actions with a seven-day

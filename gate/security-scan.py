@@ -65,6 +65,17 @@ def dependency_scan(root):
     dependencies(scanner, root)
 
 
+def npm_dependencies(root):
+    """OSV-scan an npm tip. A tree with neither manifest is not an npm project."""
+    package = root / "package.json"
+    lock = root / "package-lock.json"
+    if not package.exists() and not lock.exists():
+        return
+    if package.is_symlink() or lock.is_symlink() or not lock.is_file():
+        raise ValueError("package.json requires a regular package-lock.json for OSV")
+    dependency_scan(root)
+
+
 def secrets(root, *args):
     # Gitleaks 8.24.2 always loads source/.gitleaksignore, even with -i.
     if (root / ".gitleaksignore").exists() or (root / ".gitleaksignore").is_symlink():
@@ -121,6 +132,41 @@ def index_tree(root, tree):
         target.write_bytes(git(root, "cat-file", "blob", blob.decode()))
 
 
+def materialize_commit(root, sha, tree):
+    """Copy one commit's blobs. Symlink text is data and is never followed."""
+    if not re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", sha):
+        raise ValueError("push scan requires a full commit id")
+    if git(root, "cat-file", "-t", sha).strip() != b"commit":
+        raise ValueError("push scan target is not a commit")
+    listing = git(root, "ls-tree", "-r", "-z", "--full-tree", sha)
+    for entry in listing.split(b"\0"):
+        if not entry:
+            continue
+        metadata, raw = entry.split(b"\t", 1)
+        mode, kind, blob = metadata.split()
+        path = Path(os.fsdecode(raw))
+        if path.is_absolute() or ".." in path.parts:
+            raise ValueError("Unsafe path in pushed commit")
+        if kind == b"commit":
+            raise ValueError("Cannot scan a gitlink in a pushed commit")
+        if kind != b"blob" or mode not in (b"100644", b"100755", b"120000"):
+            raise ValueError("Unsupported object in pushed commit")
+        target = tree / path
+        if not target.resolve().is_relative_to(tree.resolve()):
+            raise ValueError("Pushed path escapes the scan tree")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(git(root, "cat-file", "blob", blob.decode()))
+
+
+def push_commit(root, sha):
+    """Semgrep and OSV over the new tip, not the worktree or already-pushed history."""
+    with tempfile.TemporaryDirectory(prefix="jsolly-push-scan-") as directory:
+        tree = Path(directory)
+        materialize_commit(root, sha, tree)
+        source(tree)
+        npm_dependencies(tree)
+
+
 def cursor(root, payload):
     if not isinstance(payload, dict) or not isinstance(payload.get("command"), str):
         raise ValueError("Malformed Cursor shell-hook input")
@@ -136,8 +182,9 @@ def cursor(root, payload):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("phase", choices=("commit", "ci", "cursor"))
+    parser.add_argument("phase", choices=("commit", "ci", "cursor", "push"))
     parser.add_argument("--root", type=Path, default=Path.cwd())
+    parser.add_argument("--commit", default="")
     args = parser.parse_args()
     root = args.root.resolve(strict=True)
     try:
@@ -146,6 +193,10 @@ def main():
             print(json.dumps({"permission": "allow"}))
         elif args.phase == "commit":
             structural(root)
+        elif args.phase == "push":
+            if not args.commit:
+                raise ValueError("push scan requires --commit")
+            push_commit(root, args.commit)
         else:
             with tempfile.TemporaryDirectory(prefix="jsolly-ci-scan-") as directory:
                 tree = Path(directory)
