@@ -88,8 +88,19 @@ secrets, security, tests and repository guidelines; use an independent reviewer
 for substantial or sensitive changes. Run the required complete local gate before
 pushing. Create a same-repository PR; use a draft while approval/work remains.
 Merge only when the required CI validates the exact current head. Never push to
-the default branch, weaken rulesets, bypass checks or use an admin merge. Optional
-personal review skills may help, but they are not prerequisites for this flow.
+the default branch, weaken rulesets, bypass checks or use an admin merge.
+
+A non-draft pull request from `solly-agent` or `jsolly` in this repository arms
+native squash auto-merge (`.github/workflows/auto-merge.yml`). GitHub merges it
+with the `solly-agent` `AUTO_MERGE_TOKEN` after the required `ci` and `security`
+checks succeed, so the normal `push` workflows run. Convert the pull request to
+a draft to hold it. `gh pr merge --disable-auto` disarms auto-merge until the
+next auto-merge run arms it again. Other authors and forks are left untouched.
+Every 30 minutes, and on manual dispatch, the workflow re-arms an eligible pull
+request that is not armed and squash-merges one whose `ci` and `security` checks
+are already green on the current head. Without `AUTO_MERGE_TOKEN` the job fails
+and does not use `GITHUB_TOKEN`. Optional personal review skills may help, but
+they are not prerequisites for this flow.
 
 Preserve existing code-only Deploy, production-main-only Vercel and opt-in Preview
 rules. Never trigger a preview merely to validate this migration. Verify the
