@@ -1,11 +1,6 @@
 # mise.lock pins each tool's download URL and checksum per platform so installs
 # need no GitHub API lookup. To bump a pin, edit it here, run `mise lock`, and
 # commit both files.
-[settings]
-lockfile = true
-lockfile_platforms = ["linux-x64", "linux-arm64", "macos-arm64"]
-
-
 [tools]
 node = "26.13.0"
 gitleaks = "8.24.2"
