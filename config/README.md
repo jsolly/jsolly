@@ -7,7 +7,7 @@ Each setting has one authoritative owner. `quality/` contains lint settings:
 preserving command scope from any working directory.
 
 Native exceptions remain at their required discovery paths: package manifests
-and lockfiles, `.npmrc`, `.nvmrc`, `.mise.toml`, Git files, `.github/`, native agent
+and lockfiles, `.npmrc`, `.nvmrc`, `.mise.toml`, `mise.lock`, Git files, `.github/`, native agent
 registrations. Executable helpers and behavioral
 instructions remain with their owners. Gitleaks continues to use its pinned
 built-in rules; there is no repository-specific scanner configuration.
