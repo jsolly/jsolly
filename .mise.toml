@@ -1,6 +1,7 @@
 # mise.lock pins each tool's download URL and checksum per platform so installs
 # need no GitHub API lookup. To bump a pin, edit it here, run `mise lock`, and
-# commit both files.
+# commit both files. Then delete any `provenance.slsa` subtable from mise.lock:
+# newer mise refuses to install from one whose registry entry names no signer.
 [tools]
 node = "26.13.0"
 gitleaks = "8.24.2"
