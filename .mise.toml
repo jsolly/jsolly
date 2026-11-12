@@ -2,8 +2,10 @@
 # need no GitHub API lookup. To bump a pin, edit it here, run `mise lock`, and
 # commit both files. After `mise lock` and before committing, delete the
 # `provenance.slsa` subtables under tools.osv-scanner in mise.lock: its registry entry
-# names no signer, so mise 2026.9.16+ refuses to install from them. Checksums and URLs
-# still pin the download; the gate test enforces this. Recheck the registry on each bump.
+# names no signer, so mise refuses to install from them (seen with mise 2026.9.16 and
+# 2026.10.14). Checksums and URLs still pin the download; the gate test enforces this.
+# Recheck the registry on each osv-scanner bump; if it now names a signer, keep the
+# subtables and remove test_mise_lock_records_no_slsa_provenance_for_osv_scanner.
 [tools]
 node = "26.13.0"
 gitleaks = "8.24.2"

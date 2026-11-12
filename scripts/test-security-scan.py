@@ -371,8 +371,8 @@ def test_mise_lock_records_no_slsa_provenance_for_osv_scanner():
         and 'slsa' in value['provenance']
     )
     assert offenders == [], (
-        'mise 2026.9.16 and later refuse to install osv-scanner from a lock that records SLSA '
+        'mise refuses (seen with 2026.9.16 and 2026.10.14) to install osv-scanner from a lock that records SLSA '
         'provenance while the Aqua registry entry names no signer. Delete the provenance.slsa '
         f'subtables under tools.osv-scanner after `mise lock` (found: {offenders}). On a version '
-        'bump, recheck whether the registry now names a signer and, if it does, remove this test instead.'
+        'bump, recheck whether the registry now names a signer and, if it does, keep the subtables and remove this test.'
     )
