@@ -1,18 +1,77 @@
 #!/usr/bin/env python3
 """Pinned scanners shared by trusted Git hooks, Cursor and pull-request CI."""
 import argparse
+import errno
+import http.client
 import json
 import os
 from pathlib import Path
 import re
 import shutil
+import socket
+import ssl
 import subprocess
 import sys
 import tempfile
+import urllib.error
+import urllib.request
 
 
 VERSIONS = {"semgrep": "1.182.1", "zizmor": "1.31.1"}
 OSV_VERSION = "2.7.0"
+# The servers the push-time Semgrep and OSV scans need: Semgrep fetches p/default, OSV queries advisories.
+SEMGREP_SERVER = "https://semgrep.dev/"
+OSV_SERVER = "https://api.osv.dev/"
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    """Report a redirect as the server's answer instead of probing the redirect target."""
+
+    def redirect_request(self, *args, **kwargs):
+        return None
+
+
+# Connect errors that mean no route to the server, alongside ConnectionError and TimeoutError.
+NO_ROUTE = {errno.ENETUNREACH, errno.EHOSTUNREACH, errno.ENETDOWN, errno.EHOSTDOWN}
+
+
+def unreachable(url, scan):
+    """True, with a warning, when url cannot be reached from this host at all.
+
+    Only the push scans use this: Claude's cloud sessions refuse the proxy tunnel to these
+    servers, and CI's Security job runs the same scans on the pull request. Any HTTP answer,
+    redirects and error statuses included, counts as reachable, so the scan runs. So does a
+    certificate this probe cannot verify: the scanner then judges the server with its own
+    trust store and fails the push if it cannot verify it either. Skipped: no DNS, no route,
+    a refused, reset or timed-out connection, a failed TLS handshake, or a proxy that refuses
+    the tunnel. Any other probe failure raises and fails the push.
+    """
+    try:
+        urllib.request.build_opener(_NoRedirect).open(
+            urllib.request.Request(url, method="HEAD"), timeout=15).close()
+        return False
+    except urllib.error.HTTPError:
+        return False
+    except (urllib.error.URLError, OSError) as error:
+        reason = error.reason if isinstance(error, urllib.error.URLError) else error
+        if isinstance(reason, ssl.SSLCertVerificationError):
+            return False
+        no_connection = (
+            isinstance(reason, (socket.gaierror, ConnectionError, TimeoutError, ssl.SSLError))
+            or (isinstance(reason, OSError) and reason.errno in NO_ROUTE)
+            # http.client's message when a proxy answers CONNECT with an error status.
+            or (type(reason) is OSError and str(reason).startswith("Tunnel connection failed"))
+        )
+        if not no_connection:
+            raise ValueError(f"could not probe {url} for the {scan} push scan ({reason!r}); "
+                             "fix this host's network setup, or let CI's Security job run the scan") from error
+        print(f"⚠ {scan} (tip) skipped: {url} is unreachable from this host ({reason}). "
+              "CI's Security job runs it on the pull request.", file=sys.stderr)
+        return True
+    except http.client.HTTPException as error:
+        raise ValueError(f"could not probe {url} for the {scan} push scan ({error!r}); "
+                         "fix this host's network setup, or let CI's Security job run the scan") from error
+
 
 def dependencies(scanner, root):
     # Repository ignore files cannot suppress dependency findings.
@@ -73,7 +132,8 @@ def npm_dependencies(root):
         return
     if package.is_symlink() or lock.is_symlink() or not lock.is_file():
         raise ValueError("package.json requires a regular package-lock.json for OSV")
-    dependency_scan(root)
+    if not unreachable(OSV_SERVER, "osv-scanner"):
+        dependency_scan(root)
 
 
 def secrets(root, *args):
@@ -159,11 +219,15 @@ def materialize_commit(root, sha, tree):
 
 
 def push_commit(root, sha):
-    """Semgrep and OSV over the new tip, not the worktree or already-pushed history."""
+    """Semgrep and OSV over the new tip, not the worktree or already-pushed history.
+
+    A scan whose server this host cannot reach is skipped with a warning; see unreachable().
+    """
     with tempfile.TemporaryDirectory(prefix="jsolly-push-scan-") as directory:
         tree = Path(directory)
         materialize_commit(root, sha, tree)
-        source(tree)
+        if not unreachable(SEMGREP_SERVER, "semgrep"):
+            source(tree)
         npm_dependencies(tree)
 
 
