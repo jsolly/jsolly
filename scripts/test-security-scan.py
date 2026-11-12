@@ -7,6 +7,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import tomllib
 
 import pytest
 
@@ -358,3 +359,20 @@ def test_native_push_rejects_stale_worktree_snapshot_before_sourcing(repo, tmp_p
     assert result.returncode != 0
     assert not marker.exists()
     assert 'snapshot or worktree hooksPath is stale' in result.stderr
+
+
+def test_mise_lock_records_no_slsa_provenance_for_osv_scanner():
+    lock = tomllib.loads((ROOT / 'mise.lock').read_text())
+    offenders = sorted(
+        key
+        for entry in lock['tools']['osv-scanner']
+        for key, value in entry.items()
+        if key.startswith('platforms.') and isinstance(value.get('provenance'), dict)
+        and 'slsa' in value['provenance']
+    )
+    assert offenders == [], (
+        'mise 2026.9.16 and later refuse to install osv-scanner from a lock that records SLSA '
+        'provenance while the Aqua registry entry names no signer. Delete the provenance.slsa '
+        f'subtables under tools.osv-scanner after `mise lock` (found: {offenders}). On a version '
+        'bump, recheck whether the registry now names a signer and, if it does, remove this test instead.'
+    )
