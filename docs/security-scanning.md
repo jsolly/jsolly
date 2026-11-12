@@ -28,8 +28,16 @@ excluded. Parser warnings remain visible and do not establish complete language
 coverage. OSV reads `package-lock.json` with an empty external config and all
 findings enabled. A tip with `package.json` and no regular lockfile fails. A
 tip with neither file is not an npm project. Symlink blobs are scanned as text
-and never followed. Scanner failure, including an unreachable `semgrep.dev` or
-`api.osv.dev`, fails the push. This repository has no inherited risk exceptions.
+and never followed. Before each scan, a HEAD probe checks its server
+(`semgrep.dev` for Semgrep, `api.osv.dev` for OSV). A server this host cannot
+reach at all (no DNS, a refused, reset or timed-out connection, a failed TLS
+handshake, no route, or a proxy that refuses the tunnel, as in Claude's cloud
+sessions) skips that scan with a warning; `Security / security` runs it on the
+pull request. Any HTTP answer, redirects included, counts as reachable. So does
+a certificate the probe cannot verify: the scanner then judges the server with
+its own trust store. Any other probe failure fails the push, as do scanner
+findings and scanner errors once a scan runs. `ci` never probes or skips. This
+repository has no inherited risk exceptions.
 
 The same Semgrep and OSV checks run in `Security / security` on PRs and main,
 with Dependabot validation deferred until an authorized `ow-ci` label event,
@@ -57,7 +65,9 @@ After review and merge, run the existing
 Git hooks and mise-pinned gitleaks, uv and OSV. Python scanner versions are pinned
 in the trusted runner and resolved through uvx when invoked. Network access is
 needed for initial tool resolution, Semgrep rules and OSV advisory queries.
-Unavailable tools and services fail the relevant check.
+Unavailable tools fail the relevant check. An unreachable `semgrep.dev` or
+`api.osv.dev` skips only that push-time scan, as described above; `ci` still
+fails on it.
 
 Existing pre-push-free installations stay intact until the new bundle is
 reviewed and installed. The helper accepts their exact historical roster only
@@ -71,7 +81,8 @@ Run `python3 -I gate/security-scan.py ci` for Semgrep, OSV and zizmor.
 Run `python3 -I gate/security-scan.py push --commit <full-sha>` for the
 pre-push Semgrep and OSV pair on one commit. Gitleaks history scanning remains
 in CI, and local outgoing scans run on push.
-Tests exercise real Git history, real gitleaks, and Semgrep on an updated tip,
+Tests exercise real Git history, real gitleaks, and Semgrep on an updated tip
+(required in CI; skipped with the warning where `semgrep.dev` is unreachable),
 including bypassed commits, multiple refs, range exclusion, an unchanged tip,
 malformed input, staged/worktree divergence and Cursor denial. Protocol tests
 do not prove native Cursor installation.

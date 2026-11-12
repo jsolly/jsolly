@@ -1,13 +1,19 @@
 """Exercise outgoing Git objects and Cursor snapshots, including bypassed commits."""
+import errno
 import hashlib
+import http.client
 import importlib.util
+import io
 import json
 import os
 from pathlib import Path
 import shutil
+import socket
+import ssl
 import subprocess
 import sys
 import tomllib
+import urllib.error
 
 import pytest
 
@@ -120,7 +126,12 @@ def test_pre_push_limits_scan_to_outgoing_history(repo, tmp_path):
     head = git(repo, 'rev-parse', 'HEAD')
     result = prepush(repo, tmp_path, f'refs/heads/main {head} refs/heads/main {held}\n')
     assert result.returncode == 0, result.stderr
-    assert 'semgrep' in result.stderr
+    if os.environ.get('GITHUB_ACTIONS') == 'true':
+        # CI reaches semgrep.dev, so the tip scan must actually run there.
+        assert 'semgrep==' + scan.VERSIONS['semgrep'] in result.stderr
+    else:
+        assert ('semgrep==' + scan.VERSIONS['semgrep'] in result.stderr
+                or 'semgrep (tip) skipped: https://semgrep.dev/ is unreachable' in result.stderr)
     assert secret() not in result.stdout + result.stderr
 
 
@@ -243,6 +254,7 @@ def test_push_scans_the_commit_tree_not_the_worktree(repo, monkeypatch):
     (repo / 'safe.txt').write_text('dirty worktree\n')
     (repo / 'package-lock.json').write_text('{"lock":"dirty"}\n')
     seen = {}
+    monkeypatch.setattr(scan, 'unreachable', lambda url, name: False)
     monkeypatch.setattr(scan, 'source', lambda root: seen.setdefault('source', (root / 'safe.txt').read_text()))
     monkeypatch.setattr(scan, 'dependency_scan', lambda root: seen.setdefault('deps', (root / 'package-lock.json').read_text()))
     scan.push_commit(repo, sha)
@@ -266,11 +278,157 @@ def test_push_requires_a_lockfile_and_does_not_follow_symlinks(repo, tmp_path, m
     def refuse_dependencies(root):
         raise AssertionError('scanned a dependency manifest')
 
+    monkeypatch.setattr(scan, 'unreachable', lambda url, name: False)
     monkeypatch.setattr(scan, 'source', capture)
     monkeypatch.setattr(scan, 'dependency_scan', refuse_dependencies)
     with pytest.raises(ValueError, match='package-lock.json'):
         scan.push_commit(repo, sha)
     assert 'outside-value' not in seen['text']
+
+
+def npm_tip(repo):
+    (repo / 'package.json').write_text('{"name":"fixture"}\n')
+    (repo / 'package-lock.json').write_text('{"lock":"committed"}\n')
+    git(repo, 'add', '.')
+    git(repo, 'commit', '-qm', 'npm tip')
+    return git(repo, 'rev-parse', 'HEAD')
+
+
+def probe_raising(monkeypatch, failures):
+    """Fake the HEAD probe: a URL in failures raises its exception, any other URL answers."""
+    probed = []
+
+    def urlopen(request, timeout):
+        probed.append(request.full_url)
+        assert request.get_method() == 'HEAD'
+        for host, error in failures.items():
+            if host in request.full_url:
+                raise error
+        return io.BytesIO()
+
+    class Opener:
+        def open(self, request, timeout):
+            return urlopen(request, timeout)
+
+    def build_opener(*handlers):
+        assert handlers == (scan._NoRedirect,), 'the probe must not follow redirects'
+        return Opener()
+
+    monkeypatch.setattr(scan.urllib.request, 'build_opener', build_opener)
+    return probed
+
+
+def record_scans(monkeypatch, source_error=None, osv_error=None):
+    calls = []
+
+    def source(root):
+        calls.append('semgrep')
+        if source_error:
+            raise source_error
+
+    def dependencies(root):
+        calls.append('osv')
+        if osv_error:
+            raise osv_error
+
+    monkeypatch.setattr(scan, 'source', source)
+    monkeypatch.setattr(scan, 'dependency_scan', dependencies)
+    return calls
+
+
+def tunnel_refused():
+    # What urllib raises when a proxy answers CONNECT with 403, as in Claude's cloud sessions.
+    return urllib.error.URLError(OSError('Tunnel connection failed: 403 Forbidden'))
+
+
+def test_push_skips_only_the_scan_whose_server_is_unreachable(repo, monkeypatch, capsys):
+    sha = npm_tip(repo)
+    probe_raising(monkeypatch, {'semgrep.dev': tunnel_refused()})
+    calls = record_scans(monkeypatch)
+    scan.push_commit(repo, sha)
+    assert calls == ['osv']
+    err = capsys.readouterr().err
+    assert 'semgrep (tip) skipped: https://semgrep.dev/ is unreachable' in err
+    assert "CI's Security job runs it on the pull request" in err
+
+    probe_raising(monkeypatch, {'api.osv.dev': tunnel_refused()})
+    calls = record_scans(monkeypatch)
+    scan.push_commit(repo, sha)
+    assert calls == ['semgrep']
+    assert 'osv-scanner (tip) skipped: https://api.osv.dev/ is unreachable' in capsys.readouterr().err
+
+
+@pytest.mark.parametrize('error', [
+    urllib.error.URLError(socket.gaierror(-2, 'Name or service not known')),
+    urllib.error.URLError(ConnectionRefusedError(111, 'Connection refused')),
+    urllib.error.URLError(TimeoutError('timed out')),
+    urllib.error.URLError(ssl.SSLError('handshake failed')),
+    urllib.error.URLError(OSError(errno.ENETUNREACH, 'Network is unreachable')),
+    urllib.error.URLError(OSError(errno.EHOSTUNREACH, 'No route to host')),
+    ConnectionResetError(104, 'Connection reset by peer'),
+    TimeoutError('read timed out'),
+    tunnel_refused(),
+])
+def test_every_no_connection_probe_failure_skips_the_scan(repo, monkeypatch, error):
+    probe_raising(monkeypatch, {'semgrep.dev': error})
+    calls = record_scans(monkeypatch)
+    scan.push_commit(repo, git(repo, 'rev-parse', 'HEAD'))
+    assert calls == []
+
+
+@pytest.mark.parametrize('error', [
+    urllib.error.URLError(OSError('unexpected local failure')),
+    PermissionError(13, 'Permission denied'),
+    http.client.BadStatusLine('garbage'),
+])
+def test_other_probe_failures_fail_the_push_without_scanning(repo, monkeypatch, error):
+    probe_raising(monkeypatch, {'semgrep.dev': error})
+    calls = record_scans(monkeypatch)
+    with pytest.raises(ValueError, match='could not probe https://semgrep.dev/'):
+        scan.push_commit(repo, git(repo, 'rev-parse', 'HEAD'))
+    assert calls == []
+
+
+@pytest.mark.parametrize('answer', [
+    urllib.error.HTTPError('https://semgrep.dev/', 405, 'Method Not Allowed', {}, None),
+    urllib.error.HTTPError('https://semgrep.dev/', 301, 'Moved Permanently', {}, None),
+    # The scanner judges the certificate with its own trust store.
+    urllib.error.URLError(ssl.SSLCertVerificationError('certificate verify failed')),
+])
+def test_an_answer_or_unverified_certificate_runs_the_scan(repo, monkeypatch, capsys, answer):
+    sha = npm_tip(repo)
+    probe_raising(monkeypatch, {'semgrep.dev': answer, 'api.osv.dev': answer})
+    calls = record_scans(monkeypatch)
+    scan.push_commit(repo, sha)
+    assert calls == ['semgrep', 'osv']
+    assert 'skipped' not in capsys.readouterr().err
+
+
+def test_no_redirect_handler_reports_a_redirect_as_an_answer():
+    assert scan._NoRedirect().redirect_request(None, None, 301, 'Moved', {}, 'https://elsewhere.invalid/') is None
+
+
+def test_a_skipped_scan_does_not_excuse_the_other_scans_failure(repo, monkeypatch):
+    sha = npm_tip(repo)
+    probe_raising(monkeypatch, {'semgrep.dev': tunnel_refused()})
+    record_scans(monkeypatch, osv_error=subprocess.CalledProcessError(1, 'osv-scanner'))
+    with pytest.raises(subprocess.CalledProcessError):
+        scan.push_commit(repo, sha)
+    probe_raising(monkeypatch, {'api.osv.dev': tunnel_refused()})
+    record_scans(monkeypatch, source_error=subprocess.CalledProcessError(1, 'semgrep'))
+    with pytest.raises(subprocess.CalledProcessError):
+        scan.push_commit(repo, sha)
+
+
+def test_ci_never_probes_or_skips(repo, monkeypatch):
+    monkeypatch.setattr(sys, 'argv', ['security-scan.py', 'ci', '--root', str(repo)])
+    monkeypatch.setattr(scan, 'unreachable', lambda url, name: pytest.fail('CI must not skip a scan'))
+    calls = []
+    monkeypatch.setattr(scan, 'structural', lambda root: calls.append('workflow'))
+    monkeypatch.setattr(scan, 'source', lambda root: calls.append('source'))
+    monkeypatch.setattr(scan, 'dependency_scan', lambda root: calls.append('dependencies'))
+    assert scan.main() == 0
+    assert calls == ['workflow', 'source', 'dependencies']
 
 
 def test_push_cli_requires_a_commit(repo, monkeypatch):
