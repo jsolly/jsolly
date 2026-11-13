@@ -34,3 +34,7 @@ step or automatic synchronization.
 
 `python/pytest.ini` owns Python test discovery: the `test-*.py` hook fixtures and
 the README link-checker and README contract tests. `npm run test:python` selects it explicitly.
+
+`typescript/tooling.json` owns strict checking for the Vitest TypeScript tests.
+`npm run check:ts` selects it explicitly; no root TypeScript adapter is needed.
+`npm test` uses Vitest’s native test discovery. The complete gate runs both.

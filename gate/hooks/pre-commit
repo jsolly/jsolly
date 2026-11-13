@@ -8,14 +8,12 @@ if [[ $hook == pre-push ]]; then
   # Gitleaks reads the commits each pushed ref sends that the destination already lacks, judged by
   # the advertised old commit, when present locally. Tracking refs may be stale.
   # A new ref scans its whole history. Keep these log options aligned with ci.yml.
-  # Semgrep p/default and OSV then scan each new tip. A tip the remote already
-  # advertises is unchanged, so it does not need another network scan.
+  # Semgrep and OSV run in required CI, never during a Git push.
   # Validate the complete installed bundle and this repository before sourcing
   # its library. Verification leaves the native pre-push stdin untouched.
   bash "$base/scripts/repo-python.sh" "$base/scripts/repo-hooks.py" verify-pre-push --snapshot "$base" --root "$PWD" >/dev/null
   source "$base/gate/gate-lib.sh"
   export GIT_NO_REPLACE_OBJECTS=1 # scan the objects the push sends, not local replacements
-  declare -A tips=()
   while true; do
     if ! read -r local_ref sha remote_ref remote_sha extra; then
       [[ -z ${local_ref:-}${sha:-}${remote_ref:-}${remote_sha:-}${extra:-} ]] ||
@@ -37,10 +35,6 @@ if [[ $hook == pre-push ]]; then
     merges="$(git rev-list --min-parents=3 "$sha" "${exclusions[@]}")"
     [[ -z $merges ]] || { echo "Cannot scan an octopus merge" >&2; exit 1; }
     gate_gitleaks_scan git --no-banner --no-color --redact --log-opts="$opts"
-    [[ $sha == "$remote_sha" ]] || tips["$sha"]=1
-  done
-  for sha in "${!tips[@]}"; do
-    bash "$base/scripts/repo-python.sh" "$base/gate/security-scan.py" push --root "$PWD" --commit "$sha"
   done
   exit 0
 fi

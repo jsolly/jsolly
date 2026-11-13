@@ -131,6 +131,15 @@ removed or overwritten by repo setup.
 See [repository security checks](security-scanning.md) for local scanning, the
 Cursor gate, CI coverage and remaining human installation steps.
 
+## TypeScript push-policy tests
+
+`npm test` runs Vitest against the installed pre-push dispatcher in isolated Git
+fixtures. Network-tool stand-ins fail if the hook attempts Semgrep, OSV, or a
+reachability probe. The suite also verifies real gitleaks history and redaction.
+`npm run check:ts` uses `config/typescript/tooling.json` for strict checking.
+Both commands run in the complete local and CI gate. The existing Python and
+math compatibility tests remain in that gate.
+
 ## Python tests
 
 `npm run check:python` runs pinned mypy 2.4.1 in strict mode for the README
