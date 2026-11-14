@@ -89,9 +89,17 @@ describe('installed gitleaks-only pre-push', () => {
     }
   });
   it('rejects a secret removed by a later outgoing commit', () => {
-    const f = fixture(); f.commit(TOKEN); const tip = f.commit('removed\n');
+    const f = fixture(); const leak = f.commit(TOKEN); const tip = f.commit('removed\n');
     const r = f.push(ref(tip, f.base)); expect(r.status, r.out).not.toBe(0);
     expect(r.out).toContain('leaks found'); expect(r.out).not.toContain(TOKEN);
+    // Exercise root history with log.showRoot=false through the installed dispatcher.
+    const orphan = f.git('commit-tree', f.git('rev-parse', `${leak}^{tree}`), '-m', 'root secret');
+    const removed = f.git('commit-tree', f.git('rev-parse', `${tip}^{tree}`), '-p', orphan, '-m', 'removed');
+    f.git('config', 'log.showRoot', 'false');
+    const blockedRoot = f.push(ref(removed, ZERO));
+    expect(blockedRoot.status, blockedRoot.out).not.toBe(0);
+    expect(blockedRoot.out).toContain('leaks found');
+    expect(blockedRoot.out).not.toContain(TOKEN);
   });
   it('excludes only advertised remote history', () => {
     const f = fixture(); const old = f.commit(TOKEN); const tip = f.commit('removed\n');

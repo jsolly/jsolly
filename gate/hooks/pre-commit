@@ -27,7 +27,7 @@ if [[ $hook == pre-push ]]; then
       { echo "✗ pre-push scans commits; $sha is not one" >&2; exit 1; }
     held=()
     if git rev-parse --verify --quiet "$remote_sha^{commit}" >/dev/null; then held+=("$remote_sha"); fi
-    opts="--text --diff-merges=remerge --no-color --no-textconv $sha"
+    opts="--root --text --diff-merges=remerge --no-color --no-textconv $sha"
     ((${#held[@]} == 0)) || opts+=" --not ${held[*]}"
     # Gitleaks cannot inspect the combined diff of an octopus merge.
     exclusions=()
