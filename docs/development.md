@@ -98,7 +98,7 @@ with the `solly-agent` `AUTO_MERGE_TOKEN` after the required `ci` and `security`
 checks succeed, so the normal `push` workflows run. Convert the pull request to
 a draft to hold it. `gh pr merge --disable-auto` disarms auto-merge until the
 next auto-merge run arms it again. Other authors and forks are left untouched.
-Every 30 minutes, and on manual dispatch, the workflow re-arms an eligible pull
+At 09:00, 17:00 and 22:00 UTC daily, and on manual dispatch, the workflow re-arms an eligible pull
 request that is not armed and squash-merges one whose `ci` and `security` checks
 are already green on the current head. Without `AUTO_MERGE_TOKEN` the job fails
 and does not use `GITHUB_TOKEN`. Optional personal review skills may help, but
