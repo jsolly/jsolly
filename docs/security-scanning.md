@@ -97,7 +97,7 @@ Markdownlint CLI 0.24.0 supplies patched `markdown-it@15.0.3` and
 `re2js` from 2.8.6 to the patched 2.8.7 for GHSA-gg6h-894w-4m9c. Its math extension still declares KaTeX `^0.16.0`, whose latest
 release is affected by GHSA-238p-pmpm-9mq7. A scoped override selects
 `micromark-extension-math`'s KaTeX 0.18.2, outside that declared range.
-`npm run test:math`, included in the complete gate, verifies the actual parent's
+`npm test`, included in the complete gate, verifies the actual parent's
 resolved KaTeX version, inline and block rendering, malformed input, untrusted
 commands, bounded macro expansion and Markdownlint's handling of math tokens.
 The override changes development tooling only. Remove it when the parent

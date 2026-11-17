@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
-import test from 'node:test';
+import { test } from 'vitest';
 import { micromark } from 'micromark';
 import { math, mathHtml } from 'micromark-extension-math';
 import { lint } from 'markdownlint/promise';
@@ -17,7 +17,7 @@ test('the math extension resolves the patched KaTeX release', () => {
 for (const [label, source, className] of [
   ['inline', '$a^2 + b^2 = c^2$', 'math-inline'],
   ['block', '$$\n\\frac{1}{2}\n$$', 'math-display'],
-]) {
+] as const) {
   test(`the parent renders ${label} math with the patched API`, () => {
     const html = micromark(source, {
       extensions: [math()],
@@ -54,6 +54,8 @@ test('markdownlint still distinguishes math from reversed Markdown links', async
     strings: { math: '$ (text)[target] $\n\n$$\n(text)[target]\n$$\n', plain: '(text)[target]\n' },
     config: { default: false, MD011: true },
   });
-  assert.equal(results.math.length, 0);
-  assert.equal(results.plain.length, 1);
+  assert.ok(results['math']);
+  assert.ok(results['plain']);
+  assert.equal(results['math'].length, 0);
+  assert.equal(results['plain'].length, 1);
 });
