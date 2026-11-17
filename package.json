@@ -13,7 +13,6 @@
     "worktree:init": "npm ci",
     "test:python": "npm run check:python && uvx --from pytest==9.0.2 pytest -c config/python/pytest.ini",
     "check:python": "uvx --from mypy==2.4.1 --with pytest==9.0.2 mypy --config-file config/python/mypy.ini",
-    "test:math": "node --test scripts/test-math-compat.mjs",
     "test": "vitest run",
     "check:ts": "tsc --project config/typescript/tooling.json"
   },
