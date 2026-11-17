@@ -18,7 +18,7 @@
     "check:ts": "tsc --project config/typescript/tooling.json"
   },
   "devDependencies": {
-    "@types/node": "26.0.0",
+    "@types/node": "26.6.6",
     "markdownlint-cli2": "0.24.0",
     "typescript": "5.9.3",
     "vitest": "4.1.12"
