@@ -7,8 +7,8 @@
 # Recheck the registry on each osv-scanner bump; if it now names a signer, keep the
 # subtables and remove test_mise_lock_records_no_slsa_provenance_for_osv_scanner.
 # `locked` makes a pin missing from mise.lock fail the install with "is not in the lockfile"
-# instead of falling back to that lookup; `lockfile_platforms` must match the platforms mise.lock
-# records.
+# instead of falling back to the GitHub API release lookup. `lockfile_platforms` lists the platforms
+# mise.lock records, so `mise lock` writes exactly those and a locked install works only on them.
 [settings]
 lockfile = true
 locked = true
