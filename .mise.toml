@@ -6,6 +6,14 @@
 # 2026.10.14). Checksums and URLs still pin the download; the gate test enforces this.
 # Recheck the registry on each osv-scanner bump; if it now names a signer, keep the
 # subtables and remove test_mise_lock_records_no_slsa_provenance_for_osv_scanner.
+# `locked` makes a pin missing from mise.lock fail the install with "is not in the lockfile"
+# instead of falling back to that lookup; `lockfile_platforms` must match the platforms mise.lock
+# records.
+[settings]
+lockfile = true
+locked = true
+lockfile_platforms = ["linux-x64", "linux-arm64", "macos-arm64"]
+
 [tools]
 node = "26.13.0"
 gitleaks = "8.24.2"
