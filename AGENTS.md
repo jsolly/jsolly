@@ -6,7 +6,7 @@ Ship profile: `gate-only`
 
 **Integration: branch → reviewed PR → merge on green `CI / ci`.** Follow [local release instructions](docs/development.md). Agents never push to `main`, change rulesets, or admin-merge.
 
-A non-draft pull request from `solly-agent`, `jsolly`, `cursor[bot]`, or `app/cursor` in this repository arms native squash auto-merge and merges when the required `ci` and `security` checks are green. Convert it to a draft to hold it. `gh pr merge --disable-auto` disarms auto-merge until the next auto-merge run arms it again.
+The agent that opens a pull request owns it: it opens ready work as non-draft and arms native squash auto-merge on the reviewed head with its own session (`gh pr merge <n> --auto --squash --match-head-commit <sha>`, per dotagents `rules/pr-auto-merge.md`). GitHub merges it once the required `ci` and `security` checks pass. Convert it to a draft or run `gh pr merge --disable-auto` to hold it. Dependabot pull requests are never armed unless John asks.
 
 Local gate before push: `npm run gate` (full working-tree checks, including an empty index).
 
