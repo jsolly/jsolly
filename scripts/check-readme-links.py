@@ -145,15 +145,24 @@ def _fetch(url: str) -> tuple[int, str]:
         return error.code, error.headers.get("Content-Type", "") if error.headers else ""
 
 
-def check_reference(reference: Reference) -> str | None:
-    """Return a one-line failure description, or None when the reference is healthy."""
+def reference_form_error(reference: Reference) -> str | None:
+    """Validate the supported link and image URL forms without a request."""
     url = reference.url
     if not url:
         return f"empty {'image source' if reference.is_image else 'link'}"
-    if url.startswith(("mailto:", "#")):
+    if url.lower().startswith(REMOTE_SCHEMES):
         return None
-    if not url.lower().startswith(REMOTE_SCHEMES):
-        return f"{url}: not an https URL (README.md is HTML plus remote https images)"
+    if not reference.is_image and url.startswith(("mailto:", "#")):
+        return None
+    return f"{url}: not an https URL (README.md is HTML plus remote https images)"
+
+
+def check_reference(reference: Reference) -> str | None:
+    """Return a one-line failure description, or None when the reference is healthy."""
+    url = reference.url
+    form_error = reference_form_error(reference)
+    if form_error is not None or not url.lower().startswith(REMOTE_SCHEMES):
+        return form_error
     last_error = ""
     for attempt in range(1, ATTEMPTS + 1):
         try:

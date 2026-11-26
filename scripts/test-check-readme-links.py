@@ -34,6 +34,7 @@ class _Checker(Protocol):
     _sleep: Callable[[float], None]
 
     def extract_references(self, text: str) -> tuple[list[_Reference], list[str]]: ...
+    def reference_form_error(self, reference: _Reference) -> str | None: ...
     def check_reference(self, reference: _Reference) -> str | None: ...
     def main(self, argv: list[str]) -> int: ...
     def _fetch(self, url: str) -> tuple[int, str]: ...
@@ -291,10 +292,14 @@ def test_an_empty_image_source_fails() -> None:
 
 
 @pytest.mark.parametrize(
-    "url", ["assets/banner.svg", "/assets/banner.svg", "ftp://example.com/x", "http://www.jsolly.com/"]
+    "url", [
+        "assets/banner.svg", "/assets/banner.svg", "ftp://example.com/x", "http://www.jsolly.com/",
+        "mailto:hello@example.com", "#top",
+    ]
 )
-def test_a_reference_that_is_not_a_remote_https_url_fails(url: str) -> None:
-    assert checker.check_reference(Reference(url, True)) == (
+def test_an_image_source_that_is_not_remote_https_fails(url: str) -> None:
+    [reference], _ = checker.extract_references(f'<img src="{url}">')
+    assert checker.check_reference(reference) == (
         f"{url}: not an https URL (README.md is HTML plus remote https images)"
     )
 
@@ -332,7 +337,8 @@ def test_the_shipped_readme_uses_only_forms_the_checker_verifies() -> None:
     references, unsupported = checker.extract_references(readme.read_text(encoding="utf-8"))
     assert unsupported == []
     assert references
-    assert all(r.url.startswith("https://") or r.url.startswith(("mailto:", "#")) for r in references)
+    errors = [error for r in references if (error := checker.reference_form_error(r)) is not None]
+    assert errors == []
 
 
 @pytest.mark.parametrize('scheme', ['file:///etc/passwd', 'data:text/plain,unsafe', 'ftp://example.invalid/a'])
